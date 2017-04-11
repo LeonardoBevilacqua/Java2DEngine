@@ -24,6 +24,11 @@ public class Screen {
         pixels = new int[width * height];
     }
     
+    public void setOffset(int xOffset, int yOffset) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+    }
+    
     public void render(int xPos, int yPos, int tile, int colour){
         render(xPos, yPos, tile, colour,false,false);
     }

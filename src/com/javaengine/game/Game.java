@@ -4,6 +4,7 @@ import com.javaengine.game.gfx.Colours;
 import com.javaengine.game.gfx.Font;
 import com.javaengine.game.gfx.Screen;
 import com.javaengine.game.gfx.SpriteSheet;
+import com.javaengine.game.level.Level;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -32,6 +33,7 @@ public class Game extends Canvas implements Runnable{
     
     private Screen screen;
     public InputHandler input;
+    public Level level;
     
     public Game(){
         setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT * SCALE));
@@ -67,6 +69,7 @@ public class Game extends Canvas implements Runnable{
         
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
+        level = new Level(64, 64);
     }
     
     public synchronized void start() {
@@ -124,15 +127,18 @@ public class Game extends Canvas implements Runnable{
         }
     }
     
+    private int x = 0, y = 0;
+    
     // update the logic of the game
     public void tick(){
         tickCount++;
         
-        if (input.up.isPressed()) screen.yOffset--;
-        if (input.down.isPressed()) screen.yOffset++;
-        if (input.left.isPressed()) screen.xOffset--;
-        if (input.right.isPressed()) screen.xOffset++;
+        if (input.up.isPressed()) y--;
+        if (input.down.isPressed()) y++;
+        if (input.left.isPressed()) x--;
+        if (input.right.isPressed()) x++;
         
+        level.tick();
     }
     // update the visual of the game
     public void render(){
@@ -142,16 +148,18 @@ public class Game extends Canvas implements Runnable{
             return;
         }
         
-        for (int y = 0; y < 32; y++) {
-            for (int x = 0; x < 32; x++) {
-                boolean flipX = x%2 == 0;    
-                boolean flipY = y%2 == 0;    
-                screen.render(x << 3, y << 3, 0, Colours.get(555, 505, 055, 550),flipX, flipY);
-            }
-        }
-        String msg = "This is our game!";
-        Font.render(msg,screen,screen.xOffset + screen.width / 2 - (msg.length() * 8/2),screen.yOffset + screen.height / 2,Colours.get(-1, -1, -1, 0    ));
+        int xOffset = x - (screen.width/2);
+        int yOffset = y - (screen.height/2);
         
+        level.renderTiles(screen, xOffset, yOffset);
+        
+        for (int x = 0; x < level.width; x++) {
+            int colours = Colours.get(-1, -1, -1, 000);
+            if(x % 10 == 0 && x != 0){
+                colours = Colours.get(-1, -1, -1, 500);
+            }
+            Font.render((x % 10) + "", screen, 0 + x * 8, 0, colours);
+        }
         
         for (int y = 0; y < screen.height; y++) {
             for (int x = 0; x < screen.width; x++) {
