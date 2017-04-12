@@ -1,8 +1,6 @@
 package com.javaengine.game;
 
 import com.javaengine.game.entities.Player;
-import com.javaengine.game.gfx.Colours;
-import com.javaengine.game.gfx.Font;
 import com.javaengine.game.gfx.Screen;
 import com.javaengine.game.gfx.SpriteSheet;
 import com.javaengine.game.level.Level;
@@ -71,7 +69,7 @@ public class Game extends Canvas implements Runnable{
         
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
-        level = new Level(64, 64);
+        level = new Level("/levels/small_level.png");
         player = new Player(level, 0, 0, input);
         level.addEntity(player);
     }
