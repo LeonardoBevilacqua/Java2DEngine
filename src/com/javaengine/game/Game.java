@@ -150,14 +150,6 @@ public class Game extends Canvas implements Runnable{
         
         level.renderTiles(screen, xOffset, yOffset);
         
-        for (int x = 0; x < level.width; x++) {
-            int colours = Colours.get(-1, -1, -1, 000);
-            if(x % 10 == 0 && x != 0){
-                colours = Colours.get(-1, -1, -1, 500);
-            }
-            Font.render((x % 10) + "", screen, 0 + x * 8, 0, colours);
-        }
-        
         level.renderEntities(screen);
         
         for (int y = 0; y < screen.height; y++) {
