@@ -13,6 +13,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class Game extends Canvas implements Runnable{
 
@@ -70,7 +71,7 @@ public class Game extends Canvas implements Runnable{
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
         level = new Level("/levels/water_test_level.png");
-        player = new Player(level, 0, 0, input);
+        player = new Player(level, 50, 50, input, JOptionPane.showInputDialog(this,"Please enter a username:","Temporary GUI", JOptionPane.INFORMATION_MESSAGE));
         level.addEntity(player);
     }
     
