@@ -37,7 +37,7 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     private int[] colours = new int[6 * 6 * 6];
-    
+
     private Screen screen;
     public InputHandler input;
     public WindowHandler windowHandler;
@@ -52,7 +52,7 @@ public class Game extends Canvas implements Runnable {
 
     public void init() {
         game = this;
-        
+
         int index = 0;
         for (int r = 0; r < 6; r++) { // reds
             for (int g = 0; g < 6; g++) { // greens
@@ -74,7 +74,7 @@ public class Game extends Canvas implements Runnable {
         level.addEntity(player);
 
         if (!isApplet) {
-            Packet00Login loginPacket = new Packet00Login(player.getUsername());
+            Packet00Login loginPacket = new Packet00Login(player.getUsername(), player.x, player.y);
 
             if (socketServer != null) {
                 socketServer.addConnection((PlayerMP) player, loginPacket);

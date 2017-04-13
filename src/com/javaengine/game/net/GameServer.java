@@ -108,7 +108,7 @@ public class GameServer extends Thread {
                 alreadyConnected = true;
             } else {
                 sendData(packet.getData(), p.ipAddress, p.port);
-                packet = new Packet00Login(p.getUsername());
+                packet = new Packet00Login(p.getUsername(),p.x,p.y);
                 sendData(packet.getData(), player.ipAddress, player.port);
             }
         }
