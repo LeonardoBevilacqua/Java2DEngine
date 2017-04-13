@@ -4,6 +4,7 @@ import com.javaengine.game.Game;
 import com.javaengine.game.entities.PlayerMP;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet00Login;
+import com.javaengine.game.net.packets.Packet01Disconnect;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -69,6 +70,13 @@ public class GameClient extends Thread {
 
                 break;
             case DISCONNECT:
+                packet = new Packet01Disconnect(data);
+
+                System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+                        + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
+                
+                game.level.removePlayerMP(((Packet01Disconnect)packet).getUsername());
+                
                 break;
         }
 

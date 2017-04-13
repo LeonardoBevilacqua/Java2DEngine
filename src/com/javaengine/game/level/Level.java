@@ -1,6 +1,7 @@
 package com.javaengine.game.level;
 
 import com.javaengine.game.entities.Entity;
+import com.javaengine.game.entities.PlayerMP;
 import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.gfx.Screen;
 import java.awt.image.BufferedImage;
@@ -24,38 +25,39 @@ public class Level {
         if (imagePath != null) {
             this.imagePath = imagePath;
             this.loadLevelFromFile();
-            
+
         } else {
             this.width = 64;
             this.height = 64;
 
             tiles = new byte[height * width];
-            
+
             this.generateLevel();
         }
     }
-    
-    private void loadLevelFromFile(){
+
+    private void loadLevelFromFile() {
         try {
             this.image = ImageIO.read(Level.class.getResource(this.imagePath));
             this.width = image.getWidth();
             this.height = image.getHeight();
-            
+
             tiles = new byte[width * height];
-            
+
             this.loadTiles();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    private void loadTiles(){
+
+    private void loadTiles() {
         int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0, width);
-        
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                tileCheck: for (Tile t : Tile.tiles) {
+                tileCheck:
+                for (Tile t : Tile.tiles) {
                     if (t != null && t.getLevelColour() == tileColours[x + y * width]) {
                         this.tiles[x + y * width] = t.getId();
                         break tileCheck;
@@ -64,16 +66,16 @@ public class Level {
             }
         }
     }
-    
-    private void saveLevelToFile(){
+
+    private void saveLevelToFile() {
         try {
             ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    public void alterTile(int x, int y, Tile newTile){
+
+    public void alterTile(int x, int y, Tile newTile) {
         this.tiles[x + y * width] = newTile.getId();
         image.setRGB(x, y, newTile.getLevelColour());
     }
@@ -94,7 +96,7 @@ public class Level {
         for (Entity e : entities) {
             e.tick();
         }
-        
+
         for (Tile t : Tile.tiles) {
             if (t == null) {
                 break;
@@ -141,5 +143,17 @@ public class Level {
 
     public void addEntity(Entity entity) {
         this.entities.add(entity);
+    }
+
+    public void removePlayerMP(String username) {
+        int index = 0;
+        for (Entity e : entities) {
+            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
+                break;
+            }
+            index++;
+        }
+        
+        this.entities.remove(index);
     }
 }

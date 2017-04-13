@@ -5,6 +5,7 @@ import com.javaengine.game.entities.PlayerMP;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet.PacketTypes;
 import com.javaengine.game.net.packets.Packet00Login;
+import com.javaengine.game.net.packets.Packet01Disconnect;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -73,6 +74,12 @@ public class GameServer extends Thread {
 
                 break;
             case DISCONNECT:
+                packet = new Packet01Disconnect(data);
+
+                System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+                        + ((Packet01Disconnect) packet).getUsername() + " has left...");
+
+                this.removeConnection(((Packet01Disconnect) packet));
                 break;
         }
 
@@ -94,12 +101,38 @@ public class GameServer extends Thread {
             } else {
                 sendData(packet.getData(), p.ipAddress, p.port);
                 packet = new Packet00Login(p.getUsername());
-                sendData(packet.getData(),player.ipAddress,player.port);
+                sendData(packet.getData(), player.ipAddress, player.port);
             }
         }
         if (!alreadyConnected) {
             this.connectedPlayers.add(player);
         }
+    }
+
+    public void removeConnection(Packet01Disconnect packet) {
+        this.connectedPlayers.remove(getPlayeMPIndex(packet.getUsername()));
+        
+        packet.writeData(this);
+    }
+
+    public PlayerMP getPlayeMP(String username) {
+        for (PlayerMP player : connectedPlayers) {
+            if (player.getUsername().equals(username)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public int getPlayeMPIndex(String username) {
+        int index = 0;
+        for (PlayerMP player : connectedPlayers) {
+            if (player.getUsername().equals(username)) {
+                break;
+            }
+            index++;
+        }
+        return index;
     }
 
     public void sendData(byte[] data, InetAddress ipAddress, int port) {
