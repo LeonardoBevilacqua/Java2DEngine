@@ -111,7 +111,7 @@ public class GameServer extends Thread {
 
     public void removeConnection(Packet01Disconnect packet) {
         this.connectedPlayers.remove(getPlayeMPIndex(packet.getUsername()));
-        
+
         packet.writeData(this);
     }
 
@@ -136,12 +136,14 @@ public class GameServer extends Thread {
     }
 
     public void sendData(byte[] data, InetAddress ipAddress, int port) {
-        DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
+        if (!game.isApplet) {
+            DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
 
-        try {
-            this.socket.send(packet);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            try {
+                this.socket.send(packet);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

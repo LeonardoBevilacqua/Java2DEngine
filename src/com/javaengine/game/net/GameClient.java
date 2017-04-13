@@ -30,24 +30,24 @@ public class GameClient extends Thread {
             ex.printStackTrace();
         }
     }
-    
-    public void run(){
-        while(true){
+
+    public void run() {
+        while (true) {
             byte[] data = new byte[1024];
             DatagramPacket packet = new DatagramPacket(data, data.length);
-            
+
             try {
                 socket.receive(packet);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            
+
             this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 //            String message = new String(packet.getData());
 //            System.out.println("SERVER > " + message);
         }
     }
-    
+
     private void parsePacket(byte[] data, InetAddress address, int port) {
         String message = new String(data).trim();
         Packet.PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
@@ -74,21 +74,23 @@ public class GameClient extends Thread {
 
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
-                
-                game.level.removePlayerMP(((Packet01Disconnect)packet).getUsername());
-                
+
+                game.level.removePlayerMP(((Packet01Disconnect) packet).getUsername());
+
                 break;
         }
 
     }
-    
-    public void sendData(byte[] data){
-        DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
-        
-        try {
-            socket.send(packet);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+
+    public void sendData(byte[] data) {
+        if (!game.isApplet) {
+            DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
+
+            try {
+                socket.send(packet);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
