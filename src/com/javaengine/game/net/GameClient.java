@@ -1,6 +1,9 @@
 package com.javaengine.game.net;
 
 import com.javaengine.game.Game;
+import com.javaengine.game.entities.PlayerMP;
+import com.javaengine.game.net.packets.Packet;
+import com.javaengine.game.net.packets.Packet00Login;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -38,9 +41,37 @@ public class GameClient extends Thread {
                 ex.printStackTrace();
             }
             
-            String message = new String(packet.getData());
-            System.out.println("SERVER > " + message);
+            this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+//            String message = new String(packet.getData());
+//            System.out.println("SERVER > " + message);
         }
+    }
+    
+    private void parsePacket(byte[] data, InetAddress address, int port) {
+        String message = new String(data).trim();
+        Packet.PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
+
+        Packet packet = null;
+
+        switch (type) {
+            default:
+            case INVALID:
+                break;
+            case LOGIN:
+                packet = new Packet00Login(data);
+
+                System.out.println("[" + address.getHostAddress() + ":" + port + "] "
+                        + ((Packet00Login) packet).getUsername() + " has joined the game...");
+
+                PlayerMP player = new PlayerMP(game.level, 100, 100, ((Packet00Login) packet).getUsername(), address, port);
+
+                game.level.addEntity(player);
+
+                break;
+            case DISCONNECT:
+                break;
+        }
+
     }
     
     public void sendData(byte[] data){

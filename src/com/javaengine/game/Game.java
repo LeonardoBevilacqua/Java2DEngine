@@ -1,6 +1,7 @@
 package com.javaengine.game;
 
 import com.javaengine.game.entities.Player;
+import com.javaengine.game.entities.PlayerMP;
 import com.javaengine.game.gfx.Screen;
 import com.javaengine.game.gfx.SpriteSheet;
 import com.javaengine.game.level.Level;
@@ -77,14 +78,20 @@ public class Game extends Canvas implements Runnable {
         screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
         input = new InputHandler(this);
         level = new Level("/levels/water_test_level.png");
-//        player = new Player(level, 50, 50, input, JOptionPane.showInputDialog(this, "Please enter a username:", "Temporary GUI", JOptionPane.INFORMATION_MESSAGE));
-//        level.addEntity(player);
-//        
+
+        player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please enter a username:", "Temporary GUI", JOptionPane.INFORMATION_MESSAGE), null, -1);
+        level.addEntity(player);
+
+        Packet00Login loginPacket = new Packet00Login(player.getUsername());
+
+        if (socketServer != null) {
+            socketServer.addConnection((PlayerMP) player, loginPacket);
+        }
+
 //        socketClient.sendData("ping".getBytes());
-        
-        Packet00Login loginPacket = new Packet00Login(JOptionPane.showInputDialog(this, "Please enter a username:", "Temporary GUI", JOptionPane.INFORMATION_MESSAGE));
+
         loginPacket.writeData(socketClient);
-        
+
     }
 
     public synchronized void start() {
