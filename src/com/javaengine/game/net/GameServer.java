@@ -6,6 +6,7 @@ import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet.PacketTypes;
 import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
+import com.javaengine.game.net.packets.Packet02Move;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -81,6 +82,13 @@ public class GameServer extends Thread {
 
                 this.removeConnection(((Packet01Disconnect) packet));
                 break;
+            case MOVE:
+                packet = new Packet02Move(data);
+                System.err.println(((Packet02Move) packet).getClass()
+                        + " has moved to "
+                        + ((Packet02Move) packet).getX() + "," + ((Packet02Move) packet).getY());
+                this.handleMove(((Packet02Move)packet));
+                break;
         }
 
     }
@@ -150,6 +158,17 @@ public class GameServer extends Thread {
     public void sendDataToAllClients(byte[] data) {
         for (PlayerMP p : connectedPlayers) {
             sendData(data, p.ipAddress, p.port);
+        }
+    }
+
+    private void handleMove(Packet02Move packet) {
+        if (getPlayeMP(packet.getUsername()) != null) {
+            int index = getPlayeMPIndex(packet.getUsername());
+            
+            this.connectedPlayers.get(index).x = packet.getX();
+            this.connectedPlayers.get(index).y = packet.getY();
+            
+            packet.writeData(this);
         }
     }
 }

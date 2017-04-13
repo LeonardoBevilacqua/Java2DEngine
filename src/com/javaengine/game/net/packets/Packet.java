@@ -6,7 +6,7 @@ import com.javaengine.game.net.GameServer;
 public abstract class Packet {
 
     public static enum PacketTypes {
-        INVALID(-1), LOGIN(00), DISCONNECT(01);
+        INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02);
 
         private int packetId;
 
@@ -33,19 +33,19 @@ public abstract class Packet {
         String message = new String(data).trim();
         return message.substring(2);
     }
-    
+
     public abstract byte[] getData();
-    
-    public static PacketTypes lookupPacket(String packetId){
+
+    public static PacketTypes lookupPacket(String packetId) {
         try {
             return lookupPacket(Integer.parseInt(packetId));
         } catch (NumberFormatException e) {
             return PacketTypes.INVALID;
         }
     }
-    
-    public static PacketTypes lookupPacket(int id){
-        for(PacketTypes p : PacketTypes.values()){
+
+    public static PacketTypes lookupPacket(int id) {
+        for (PacketTypes p : PacketTypes.values()) {
             if (p.getId() == id) {
                 return p;
             }

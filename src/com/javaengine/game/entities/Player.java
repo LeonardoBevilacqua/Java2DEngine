@@ -1,10 +1,12 @@
 package com.javaengine.game.entities;
 
+import com.javaengine.game.Game;
 import com.javaengine.game.InputHandler;
 import com.javaengine.game.gfx.Colours;
 import com.javaengine.game.gfx.Font;
 import com.javaengine.game.gfx.Screen;
 import com.javaengine.game.level.Level;
+import com.javaengine.game.net.packets.Packet02Move;
 
 public class Player extends Mob {
 
@@ -44,6 +46,10 @@ public class Player extends Mob {
         if (xa != 0 || ya != 0) {
             move(xa, ya);
             isMoving = true;
+
+            Packet02Move packet = new Packet02Move(this.getUsername(), this.x, this.y);
+            packet.writeData(Game.game.socketClient);
+
         } else {
             isMoving = false;
         }

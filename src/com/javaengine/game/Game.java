@@ -15,7 +15,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -26,6 +25,7 @@ public class Game extends Canvas implements Runnable {
     public static final int SCALE = 3;
     public static final String NAME = "Game2dEngine";
     public static final Dimension DIMENSIONS = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
+    public static Game game;
 
     public JFrame frame;
 
@@ -37,7 +37,7 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     private int[] colours = new int[6 * 6 * 6];
-
+    
     private Screen screen;
     public InputHandler input;
     public WindowHandler windowHandler;
@@ -51,6 +51,8 @@ public class Game extends Canvas implements Runnable {
     public boolean isApplet = false;
 
     public void init() {
+        game = this;
+        
         int index = 0;
         for (int r = 0; r < 6; r++) { // reds
             for (int g = 0; g < 6; g++) { // greens

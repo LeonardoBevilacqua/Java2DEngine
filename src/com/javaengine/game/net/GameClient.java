@@ -5,6 +5,7 @@ import com.javaengine.game.entities.PlayerMP;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
+import com.javaengine.game.net.packets.Packet02Move;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -78,6 +79,11 @@ public class GameClient extends Thread {
                 game.level.removePlayerMP(((Packet01Disconnect) packet).getUsername());
 
                 break;
+            case MOVE:
+                packet = new Packet02Move(data);
+                handleMove(((Packet02Move)packet));
+                
+                break;
         }
 
     }
@@ -92,5 +98,9 @@ public class GameClient extends Thread {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void handleMove(Packet02Move packet) {
+        this.game.level.movePlayer(packet.getUsername(), packet.getX(), packet.getY());
     }
 }
