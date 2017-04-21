@@ -1,4 +1,4 @@
-package com.javaengine.game;
+package com.javaengine.game.handlers;
 
 import com.javaengine.game.net.packets.Packet01Disconnect;
 import java.awt.event.WindowEvent;
@@ -6,21 +6,23 @@ import java.awt.event.WindowListener;
 
 public class WindowHandler implements WindowListener {
 
-    private final Game game;
-    
-    public WindowHandler(Game game){
-        this.game = game;
-        this.game.frame.addWindowListener(this);
+    private final Handler handler;
+
+    public WindowHandler(Handler handler) {
+        this.handler = handler;
     }
-    
+
     @Override
     public void windowOpened(WindowEvent e) {
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
-        Packet01Disconnect packet = new Packet01Disconnect(this.game.player.getUsername());
-        packet.writeData(this.game.socketClient);
+        if (handler.getSocketClient() != null) {
+            Packet01Disconnect packet = new Packet01Disconnect(handler.getLevel().getEntityManager().getPlayer().getUsername());
+            packet.writeData(handler.getSocketClient());
+        }
+        handler.getGame().stop();
     }
 
     @Override
@@ -42,5 +44,5 @@ public class WindowHandler implements WindowListener {
     @Override
     public void windowDeactivated(WindowEvent e) {
     }
-    
+
 }

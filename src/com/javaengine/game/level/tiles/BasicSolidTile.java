@@ -1,10 +1,16 @@
 package com.javaengine.game.level.tiles;
 
+import java.awt.image.BufferedImage;
+
 public class BasicSolidTile extends BasicTile{
     
-    public BasicSolidTile(int id, int x, int y, int tileColour, int levelColour) {
-        super(id, x, y, tileColour, levelColour);
-        this.solid = true;
+    public BasicSolidTile(int id, BufferedImage tile) {
+        super(id, tile);
+    }
+    
+    @Override
+    public boolean isSolid(){
+        return true;
     }
     
 }

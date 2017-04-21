@@ -1,7 +1,7 @@
 package com.javaengine.game.net;
 
-import com.javaengine.game.Game;
-import com.javaengine.game.entities.PlayerMP;
+import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
@@ -17,10 +17,10 @@ public class GameClient extends Thread {
 
     private InetAddress ipAddress;
     private DatagramSocket socket;
-    private Game game;
+    private Handler handler;
 
-    public GameClient(Game game, String ipAddress) {
-        this.game = game;
+    public GameClient(Handler handler, String ipAddress) {
+        this.handler = handler;
 
         try {
             this.socket = new DatagramSocket();
@@ -44,8 +44,8 @@ public class GameClient extends Thread {
             }
 
             this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
-//            String message = new String(packet.getData());
-//            System.out.println("SERVER > " + message);
+            //String message = new String(packet.getData());
+            //System.out.println("SERVER > " + message);
         }
     }
 
@@ -71,7 +71,7 @@ public class GameClient extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
 
-                game.level.removePlayerMP(((Packet01Disconnect) packet).getUsername());
+                handler.getLevel().getEntityManager().removePlayerMP(((Packet01Disconnect) packet).getUsername());
 
                 break;
             case MOVE:
@@ -84,14 +84,12 @@ public class GameClient extends Thread {
     }
 
     public void sendData(byte[] data) {
-        if (!game.isApplet) {
-            DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
+        DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
 
-            try {
-                socket.send(packet);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        try {
+            socket.send(packet);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -99,12 +97,12 @@ public class GameClient extends Thread {
         System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                 + packet.getUsername() + " has joined the game...");
 
-        PlayerMP player = new PlayerMP(game.level, packet.getX(), packet.getY(), packet.getUsername(), address, port);
+        PlayerMP player = new PlayerMP(handler, packet.getX(), packet.getY(), packet.getUsername(), address, port,false);
 
-        game.level.addEntity(player);
+        handler.getLevel().getEntityManager().addEntity(player);
     }
 
     private void handleMove(Packet02Move packet) {
-        this.game.level.movePlayer(packet.getUsername(), packet.getX(), packet.getY());
+        this.handler.getLevel().getEntityManager().movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getNumSteps(), packet.isIsMoving(), packet.getMovingDir());
     }
 }

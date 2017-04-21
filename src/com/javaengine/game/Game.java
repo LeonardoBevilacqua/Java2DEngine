@@ -1,107 +1,103 @@
 package com.javaengine.game;
 
-import com.javaengine.game.entities.Player;
-import com.javaengine.game.entities.PlayerMP;
-import com.javaengine.game.gfx.Screen;
-import com.javaengine.game.gfx.SpriteSheet;
-import com.javaengine.game.level.Level;
-import com.javaengine.game.net.GameClient;
-import com.javaengine.game.net.GameServer;
-import com.javaengine.game.net.packets.Packet00Login;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
+import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.handlers.input.InputHandler;
+import com.javaengine.game.display.Display;
+import com.javaengine.game.gfx.Assets;
+import com.javaengine.game.gfx.GameCamera;
+import com.javaengine.game.handlers.WindowHandler;
+import com.javaengine.game.handlers.input.MouseManager;
+import com.javaengine.game.states.MenuState;
+import com.javaengine.game.states.State;
+import com.javaengine.game.utils.DebugMode;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
-public class Game extends Canvas implements Runnable {
+public class Game implements Runnable {
 
-    public static final int WIDTH = 160;
-    public static final int HEIGHT = WIDTH / 12 * 9;
-    public static final int SCALE = 3;
+// PUBLIC STATIC FINAL VARIABLES
     public static final String NAME = "Game2dEngine";
-    public static final Dimension DIMENSIONS = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
-    public static Game game;
+    public static final int GAME_WIDTH = 160, GAME_HEIGHT = GAME_WIDTH / 12 * 9;
+    public static final int SCALE = 3;
 
-    public JFrame frame;
-
+// PRIVATE VARIBLES
     private Thread thread;
 
-    public boolean running = false;
-    public int tickCount = 0;
+    private boolean running = false;
+    private boolean debug = true;
+    private int tickCount = 0;
+    private int width, height;
+    
+    private DebugMode debugMode;
 
-    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-    private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-    private int[] colours = new int[6 * 6 * 6];
+    private Display display;
 
-    private Screen screen;
-    public InputHandler input;
-    public WindowHandler windowHandler;
-    public Level level;
-    public Player player;
+    // graphics
+    private BufferStrategy bs;
+    private Graphics g;
 
-    public GameClient socketClient;
-    public GameServer socketServer;
+    // states
+    //private State gameState;
+    private State menuState;
+    //private State mpGameState;
 
-    public boolean debug = true;
-    public boolean isApplet = false;
+    // input
+    private InputHandler input;
+    private MouseManager mouseManager;
+
+    // window
+    private WindowHandler window;
+
+    // camera
+    private GameCamera gameCamera;
+
+    // handler
+    private Handler handler;
 
     public void init() {
-        game = this;
+        handler = new Handler(this);
+        debugMode = new DebugMode(handler);
 
-        int index = 0;
-        for (int r = 0; r < 6; r++) { // reds
-            for (int g = 0; g < 6; g++) { // greens
-                for (int b = 0; b < 6; b++) { // blues
-                    int rr = (r * 255 / 5); // red
-                    int gg = (g * 255 / 5); // green
-                    int bb = (b * 255 / 5); // blue
+        width = GAME_WIDTH * SCALE;
+        height = GAME_HEIGHT * SCALE;
+        display = new Display(NAME, width, height);
 
-                    colours[index++] = rr << 16 | gg << 8 | bb;
-                }
-            }
-        }
+        // ADD THE CONTROLLERS OF THE GAME  
+        input = new InputHandler();
+        display.getCanvas().addKeyListener(input);
+        
+        mouseManager = new MouseManager();
+        display.getFrame().addMouseListener(mouseManager);
+        display.getFrame().addMouseMotionListener(mouseManager);
+        display.getCanvas().addMouseListener(mouseManager);
+        display.getCanvas().addMouseMotionListener(mouseManager);
 
-        screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
-        input = new InputHandler(this);
-        level = new Level("/levels/water_test_level.png");
+        window = new WindowHandler(handler);
+        display.getFrame().addWindowListener(window);
 
-        player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please enter a username:", "Temporary GUI", JOptionPane.INFORMATION_MESSAGE), null, -1);
-        level.addEntity(player);
+        Assets.init();
+        gameCamera = new GameCamera(handler, 0, 0);
 
-        if (!isApplet) {
-            Packet00Login loginPacket = new Packet00Login(player.getUsername(), player.x, player.y);
-
-            if (socketServer != null) {
-                socketServer.addConnection((PlayerMP) player, loginPacket);
-            }
-
-//        socketClient.sendData("ping".getBytes());
-            loginPacket.writeData(socketClient);
-        }
+        //gameState = new GameState(handler);
+        menuState = new MenuState(handler);
+        //mpGameState = new MPGameState(handler);
+        
+        State.setState(menuState);
     }
 
     public synchronized void start() {
+        if (running) {
+            return;
+        }
         running = true;
         thread = new Thread(this, NAME + "_main");
         thread.start();
-
-        if (!isApplet) {
-            if (JOptionPane.showConfirmDialog(this, "Do you want to run the server?") == 0) {
-                socketServer = new GameServer(this);
-                socketServer.start();
-            }
-
-            socketClient = new GameClient(this, "localhost");
-            socketClient.start();
-        }
     }
 
     public synchronized void stop() {
+        if (!running) {
+            return;
+        }
         running = false;
 
         try {
@@ -115,13 +111,10 @@ public class Game extends Canvas implements Runnable {
     public void run() {
         long lastTime = System.nanoTime();
         double nsPerTick = 1000000000D / 60D;
-
         int frames = 0;
         int ticks = 0;
-
         long lastTimer = System.currentTimeMillis();
         double delta = 0;
-
         init();
 
         while (running) {
@@ -150,7 +143,7 @@ public class Game extends Canvas implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                debug(DebugLevel.INFO, (ticks + " ticks, " + frames + " frames"));
+                DebugMode.debug(DebugMode.DebugLevel.NOTSHOW, (ticks + " ticks, " + frames + " frames"));
                 frames = 0;
                 ticks = 0;
             }
@@ -161,64 +154,87 @@ public class Game extends Canvas implements Runnable {
     public void tick() {
         tickCount++;
 
-        level.tick();
+        if (State.getCurrentState() != null) {
+            State.getCurrentState().tick();
+        }
+
+        checkWindow();
     }
 
     // update the visual of the game
     public void render() {
-        BufferStrategy bs = getBufferStrategy();
+        bs = display.getCanvas().getBufferStrategy();
         if (bs == null) {
-            createBufferStrategy(3);
+            display.getCanvas().createBufferStrategy(3);
             return;
         }
 
-        int xOffset = player.x - (screen.width / 2);
-        int yOffset = player.y - (screen.height / 2);
+        g = bs.getDrawGraphics();
+        // clear screen
+        g.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-        level.renderTiles(screen, xOffset, yOffset);
-
-        level.renderEntities(screen);
-
-        for (int y = 0; y < screen.height; y++) {
-            for (int x = 0; x < screen.width; x++) {
-                int colourCode = screen.pixels[x + y * screen.width];
-                if (colourCode < 255) {
-                    pixels[x + y * WIDTH] = colours[colourCode];
-                }
-            }
+        // draw        
+        if (State.getCurrentState() != null) {
+            State.getCurrentState().render(g);
         }
 
-        Graphics g = bs.getDrawGraphics();
-
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, getWidth(), getHeight());
-
-        g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-
+        // end draw
         g.dispose();
         bs.show();
     }
 
-    public void debug(DebugLevel level, String msg) {
-        switch (level) {
-            default:
-            case INFO:
-                if (debug) {
-                    System.out.println("[" + NAME + "] " + msg);
-                }
-                break;
-            case WARNING:
-                System.out.println("[" + NAME + "][WARNING] " + msg);
-                break;
-            case SEVERE:
-                System.out.println("[" + NAME + "][SEVERE] " + msg);
-                this.stop();
-                break;
+    private void checkWindow() {
+        if (width != display.getFrame().getWidth()
+                || height != display.getFrame().getHeight()) {
+            width = display.getFrame().getWidth();
+            height = display.getFrame().getHeight();
         }
     }
 
-    public static enum DebugLevel {
-        INFO, WARNING, SEVERE;
+    // getters and setters
+    public Display getDisplay() {
+        return display;
     }
 
+    public InputHandler getInput() {
+        return input;
+    }
+    
+    public MouseManager getMouseManager(){
+        return mouseManager;
+    }
+
+    public GameCamera getGameCamera() {
+        return gameCamera;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+//    public State getGameState() {
+//        return gameState;
+//    }
+    
+    public State getMenuState() {
+        return menuState;
+    }
+    
+//    public State getMPGameState() {
+//        return mpGameState;
+//    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    
 }

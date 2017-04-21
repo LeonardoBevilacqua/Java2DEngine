@@ -1,177 +1,138 @@
 package com.javaengine.game.level;
 
-import com.javaengine.game.entities.Entity;
-import com.javaengine.game.entities.PlayerMP;
+import com.javaengine.game.Game;
+import com.javaengine.game.entities.EntityManager;
+import com.javaengine.game.entities.creatures.Player;
+import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.entities.statics.Tree;
+import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.tiles.Tile;
-import com.javaengine.game.gfx.Screen;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.imageio.ImageIO;
+import com.javaengine.game.utils.Utils;
+import java.awt.Graphics;
+import javax.swing.JOptionPane;
 
 public class Level {
 
-    private byte[] tiles;
-    public int width;
-    public int height;
-    public List<Entity> entities = new ArrayList<Entity>();
-    private String imagePath;
-    private BufferedImage image;
+    private final Handler handler;
+    private int width, height;
+    private int spawnX, spawnY;
+    private int[][] tiles;
+    protected Player player;
 
-    public Level(String imagePath) {
+    // entities
+    private final EntityManager entityManager;
 
-        if (imagePath != null) {
-            this.imagePath = imagePath;
-            this.loadLevelFromFile();
+    public Level(Handler handler, String path, boolean isMultiplayer) {
+        this.handler = handler;
 
-        } else {
-            this.width = 64;
-            this.height = 64;
+        entityManager = !isMultiplayer
+                ? new EntityManager(handler,player = new Player(handler, 10, 10, "Teste"))
+                
+                : new EntityManager(handler, player = new PlayerMP(handler, 10, 10, JOptionPane.showInputDialog("nome"), null, -1, true));
 
-            tiles = new byte[height * width];
-
-            this.generateLevel();
+        for (int i = 0; i < 3; i++) {
+            entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50));
         }
-    }
 
-    private void loadLevelFromFile() {
-        try {
-            this.image = ImageIO.read(Level.class.getResource(this.imagePath));
-            this.width = image.getWidth();
-            this.height = image.getHeight();
-
-            tiles = new byte[width * height];
-
-            this.loadTiles();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadTiles() {
-        int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0, width);
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                tileCheck:
-                for (Tile t : Tile.tiles) {
-                    if (t != null && t.getLevelColour() == tileColours[x + y * width]) {
-                        this.tiles[x + y * width] = t.getId();
-                        break tileCheck;
-                    }
-                }
-            }
-        }
-    }
-
-    private void saveLevelToFile() {
-        try {
-            ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void alterTile(int x, int y, Tile newTile) {
-        this.tiles[x + y * width] = newTile.getId();
-        image.setRGB(x, y, newTile.getLevelColour());
-    }
-
-    public void generateLevel() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (x * y % 10 < 7) {
-                    tiles[x + y * width] = Tile.GRASS.getId();
-                } else {
-                    tiles[x + y * width] = Tile.STONE.getId();
-                }
-            }
-        }
+        loadLevelFromFile(path);
+        
+        entityManager.getPlayer().setX(spawnX);
+        entityManager.getPlayer().setY(spawnY);
     }
 
     public void tick() {
-        for (Entity e : entities) {
-            e.tick();
-        }
+        int xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
+        int xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
+        int yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
+        int yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
 
-        for (Tile t : Tile.tiles) {
-            if (t == null) {
-                break;
-            }
-            t.tick();
-        }
-    }
-
-    public void renderTiles(Screen screen, int xOffset, int yOffset) {
-        if (xOffset < 0) {
-            xOffset = 0;
-        }
-        if (xOffset > ((width << 3) - screen.width)) {
-            xOffset = ((width << 3) - screen.width);
-        }
-        if (yOffset < 0) {
-            yOffset = 0;
-        }
-        if (yOffset > ((height << 3) - screen.height)) {
-            yOffset = ((height << 3) - screen.height);
-        }
-
-        screen.setOffset(xOffset, yOffset);
-
-        for (int y = (yOffset >> 3); y < (yOffset + screen.height >> 3) + 1; y++) {
-            for (int x = (xOffset >> 3); x < (xOffset + screen.width >> 3) + 1; x++) {
-                getTile(x, y).render(screen, this, x << 3, y << 3);
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                getTile(x, y).tick();
             }
         }
+        // entities
+        entityManager.tick();
     }
 
-    public void renderEntities(Screen screen) {
-        for (Entity e : entities) {
-            e.render(screen);
+    public void render(Graphics g) {
+        int xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
+        int xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
+        int yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
+        int yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
+
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                getTile(x, y).render(g, (x * Tile.TILE_WIDTH - handler.getGameCamera().getxOffset()),
+                        (y * Tile.TILE_HEIGHT - handler.getGameCamera().getyOffset()));
+            }
         }
+        // entities
+        entityManager.render(g);
     }
 
-    public Tile getTile(int x, int y) {
-        if (0 > x || x >= width || 0 > y || y >= height) {
+    public synchronized Tile getTile(int x, int y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
             return Tile.VOID;
         }
-        return Tile.tiles[tiles[x + y * width]];
-    }
 
-    public void addEntity(Entity entity) {
-        this.entities.add(entity);
-    }
-
-    public void removePlayerMP(String username) {
-        int index = 0;
-        for (Entity e : entities) {
-            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
-                break;
-            }
-            index++;
+        Tile t = Tile.tiles[tiles[x][y]];
+        if (t == null) {
+            return Tile.VOID;
         }
-
-        this.entities.remove(index);
+        return t;
     }
 
-    private int getPlayerMPIndex(String username) {
-        int index = 0;
-        for (Entity e : entities) {
-            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
-                break;
+    private void loadLevelFromFile(String path) {
+        String file = Utils.loadFileAsString(path);
+        String[] tokens = file.split("\\s+");
+
+        width = Utils.parseInt(tokens[0]);
+        height = Utils.parseInt(tokens[1]);
+
+        spawnX = Utils.parseInt(tokens[2]);
+        spawnY = Utils.parseInt(tokens[3]);
+
+        tiles = new int[width][height];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                tiles[x][y] = Utils.parseInt(tokens[(x + y * width) + 4]);
             }
-            index++;
         }
-        return index;
+    }
+//
+//    public void saveLevelToFile() {
+//        try {
+//            ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void alterTile(int x, int y, Tile newTile) {
+//        this.tiles[x + y * width] = newTile.getId();
+//        image.setRGB(x, y, newTile.getLevelColour());
+//    }
+//
+
+    public int getWidth() {
+        return width;
     }
 
-    public void movePlayer(String username, int x, int y) {
-        int index = getPlayerMPIndex(username);
-        
-        this.entities.get(index).x = x;
-        this.entities.get(index).y = y;
+    public int getHeight() {
+        return height;
+    }
+
+    public int getSpawnX() {
+        return spawnX;
+    }
+
+    public int getSpawnY() {
+        return spawnY;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

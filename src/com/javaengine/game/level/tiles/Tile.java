@@ -1,52 +1,55 @@
 package com.javaengine.game.level.tiles;
 
-import com.javaengine.game.gfx.Colours;
-import com.javaengine.game.gfx.Screen;
-import com.javaengine.game.level.Level;
+import com.javaengine.game.gfx.Assets;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public abstract class Tile {
 
-    public static final Tile[] tiles = new Tile[256];
-    public static final Tile VOID = new BasicSolidTile(0, 0, 0, Colours.get(000, -1, -1, -1), 0xFF000000);
-    public static final Tile STONE = new BasicSolidTile(1, 1, 0, Colours.get(-1, 333, -1, -1), 0xFF555555);
-    public static final Tile GRASS = new BasicTile(2, 2, 0, Colours.get(-1, 131, 141, -1), 0xFF00FF00);
-    public static final Tile WATER = new AnimatedTile(3, new int[][]{{0, 5}, {1, 5}, {2, 5}, {1, 5}}, Colours.get(-1, 004, 115, -1), 0xFF0000FF, 1000);
-    public static final Tile LAVA = new BasicTile(4, 3, 0, Colours.get(-1, 500, 541, -1), 0xFFFF0000);
+    // static stuff
+    public static Tile[] tiles = new Tile[256];
 
-    protected byte id;
-    protected boolean solid;
-    protected boolean emitter;
-    private int levelColour;
+    public static final Tile VOID = new BasicSolidTile(0, Assets.voidTile);
+    public static final Tile STONE = new BasicSolidTile(1, Assets.stoneTile);
+    public static final Tile GRASS = new BasicTile(2, Assets.grassTile);
+    public static final Tile LAVA = new BasicTile(3, Assets.lavaTile);
+    public static final Tile WATER = new AnimatedTile(4, Assets.waterTile);
+    public static final Tile WATERWITHPLAYER = new AnimatedTile(5, Assets.waterWithPlayerTile);
 
-    public Tile(int id, boolean isSolid, boolean isEmitter, int levelColour) {
-        this.id = (byte) id;
-        if (tiles[id] != null) {
-            throw new RuntimeException("Duplicate tile id on " + id);
-        }
+    // class
+    public static final int TILE_WIDTH = 32, TILE_HEIGHT = 32;
 
-        this.solid = isSolid;
-        this.emitter = isEmitter;
-        this.levelColour = levelColour;
+    protected final int id;
+    protected BufferedImage texture;
+    protected BufferedImage[] textures;
+
+    public Tile(int id, BufferedImage texture) {
+        this.id = id;
+        this.texture = texture;
+
+        tiles[id] = this;
+    }
+    
+    public Tile(int id, BufferedImage[] textures) {
+        this.id = id;
+        this.textures = textures;
+
         tiles[id] = this;
     }
 
-    public byte getId() {
-        return id;
+    public void tick() {
+    }
+
+    public void render(Graphics g, int x, int y) {
+        g.drawImage(texture, x, y, TILE_WIDTH, TILE_HEIGHT, null);
     }
 
     public boolean isSolid() {
-        return solid;
+        return false;
     }
 
-    public boolean isEmitter() {
-        return emitter;
+    public int getId() {
+        return id;
     }
 
-    public int getLevelColour() {
-        return levelColour;
-    }
-
-    public abstract void tick();
-
-    public abstract void render(Screen screen, Level level, int x, int y);
 }

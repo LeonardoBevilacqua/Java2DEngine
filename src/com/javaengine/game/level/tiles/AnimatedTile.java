@@ -1,27 +1,31 @@
 package com.javaengine.game.level.tiles;
 
-public class AnimatedTile extends BasicTile {
-    
-    private int[][] animationTileCoords;
-    private int currentAnimationIndex;
-    private long lastIterationTime;
-    private int animationSwitchDelay;
-    
-    public AnimatedTile(int id, int[][] animationCoords, int tileColour, int levelColour, int animationSwitchDelay) {
-        super(id, animationCoords[0][0], animationCoords[0][1], tileColour, levelColour);
-        this.animationTileCoords = animationCoords;
-        this.currentAnimationIndex = 0;
-        this.lastIterationTime = System.currentTimeMillis();
-        this.animationSwitchDelay = animationSwitchDelay;
+import com.javaengine.game.gfx.animations.Animation;
+import com.javaengine.game.gfx.animations.AnimationTile;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+public class AnimatedTile extends Tile {
+
+    private AnimationTile animation;
+
+    public AnimatedTile(int id, BufferedImage[] tile) {
+        super(id, tile);
+        animation = new AnimationTile(800, tile);
     }
-    
+
     @Override
-    public void tick(){
-        if ((System.currentTimeMillis() - lastIterationTime) >= (animationSwitchDelay)) {
-            lastIterationTime = System.currentTimeMillis();
-            currentAnimationIndex = (currentAnimationIndex + 1) % animationTileCoords.length;
-            this.tileId = (animationTileCoords[currentAnimationIndex][0] + (animationTileCoords[currentAnimationIndex][1] * 32));
-        }
-    }    
+    public void tick() {
+        animation.tick();
+    }
+
+    @Override
+    public void render(Graphics g, int x, int y) {
+        g.drawImage(getCurrentAnimationFrame(), x, y, TILE_WIDTH, TILE_HEIGHT, null);
+    }
+
+    private BufferedImage getCurrentAnimationFrame() {
+        return animation.getCurrentFrame(true);
+    }
+
 }
- 
