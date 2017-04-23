@@ -1,9 +1,7 @@
 package com.javaengine.game.entities;
 
 import com.javaengine.game.entities.creatures.Player;
-import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
-import com.javaengine.game.level.tiles.Tile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -25,11 +23,11 @@ public abstract class Entity {
         this.y = y;
         this.width = width;
         this.height = height;
-        health = maxHealth = DEFAULT_HEALTH;
-        active = true;
-        damage = isAttacking = false;
+        this.health = maxHealth = DEFAULT_HEALTH;
+        this.active = true;
+        this.damage = isAttacking = false;
 
-        bounds = new Rectangle(0, 0, width, height);
+        this.bounds = new Rectangle(0, 0, width, height);
     }
 
     public abstract void tick();
@@ -53,7 +51,7 @@ public abstract class Entity {
     public void renderLifeBar(Graphics g) {
         float healthPercentage = health / maxHealth;
 
-        if (this instanceof Player) {
+        if (this instanceof Player && handler.getLevel().getEntityManager().getPlayer().equals(this)) {
             g.setColor(Color.gray);
             g.fillRect(20, 20, (int) maxHealth * 20, 12);
 
@@ -64,7 +62,7 @@ public abstract class Entity {
             g.drawRect(20, 20, (int) maxHealth * 20, 12);
         }
 
-        if (damage) {
+        if (damage && !(this instanceof Player)) {
 
             g.setColor(Color.gray);
             g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,

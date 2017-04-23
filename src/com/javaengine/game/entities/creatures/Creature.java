@@ -47,7 +47,8 @@ public abstract class Creature extends Entity {
                     this.y,
                     this.numSteps,
                     this.isMoving,
-                    this.movingDir
+                    this.movingDir,
+                    this.isAttacking
             );
             packet.writeData(handler.getSocketClient());
         }

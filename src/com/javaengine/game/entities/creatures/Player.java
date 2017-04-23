@@ -73,16 +73,19 @@ public class Player extends Creature {
             if (handler.getInput().right.isPressed()) {
                 xMove += speed;
             }
+            if (handler.getInput().meleeAtack.isPressed()) {
+                isAttacking = true;
+            } else {
+                isAttacking = false;
+            }
         }
     }
 
     private void setAnimation() {
-        isAttacking = false;
         if (isSwimming) {
             walkingAnimation.setIndexes(DIRECTIONS[movingDir + 4]);
-        } else if (handler.getInput().meleeAtack.isPressed()) {
+        } else if (isAttacking) {
             walkingAnimation.setIndexes(DIRECTIONS[movingDir + 8]);
-            isAttacking = true;
         } else {
             walkingAnimation.setIndexes(DIRECTIONS[movingDir]);
         }
@@ -152,11 +155,11 @@ public class Player extends Creature {
                     break;
             }
         } else {
-            
+
             return;
         }
         attackTimer = 0;
-        
+
         for (Entity e : handler.getLevel().getEntityManager().getEntities()) {
             if (e.equals(this)) {
                 continue;

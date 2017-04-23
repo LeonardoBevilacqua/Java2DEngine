@@ -91,7 +91,7 @@ public final class EntityManager {
         return index;
     }
 
-    public void movePlayer(String username, int x, int y, int numSteps, boolean isMoving, int movingDir) {
+    public void movePlayer(String username, int x, int y, int numSteps, boolean isMoving, int movingDir, boolean isAttacking) {
         int index = getPlayerMPIndex(username);
 
         PlayerMP player = (PlayerMP) entitiesMP.get(index);
@@ -101,6 +101,7 @@ public final class EntityManager {
         player.setIsMoving(isMoving);
         player.setNumSteps(numSteps);
         player.setMovingDir(movingDir);
+        player.setIsAttacking(isAttacking);
     }
 
     // getters and setters 

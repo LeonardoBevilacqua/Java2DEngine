@@ -103,6 +103,6 @@ public class GameClient extends Thread {
     }
 
     private void handleMove(Packet02Move packet) {
-        this.handler.getLevel().getEntityManager().movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getNumSteps(), packet.isIsMoving(), packet.getMovingDir());
+        this.handler.getLevel().getEntityManager().movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getNumSteps(), packet.isIsMoving(), packet.getMovingDir(),packet.isIsAttacking());
     }
 }
