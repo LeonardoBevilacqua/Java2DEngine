@@ -7,8 +7,7 @@ import com.javaengine.game.net.packets.Packet02Move;
 
 public abstract class Creature extends Entity {
 
-    public static final int DEFAULT_HEALTH = 10,
-            DEFAULT_SPEED = 2,
+    public static final int DEFAULT_SPEED  = 2,
             DEFAULT_CRETURE_WIDTH = 64,
             DEFAULT_CRETURE_HEIGHT = 64;
     protected final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
@@ -20,12 +19,10 @@ public abstract class Creature extends Entity {
     protected boolean isMoving;
     protected int movingDir = 1;
     protected int scale = 1;
-    protected int health;
 
     public Creature(Handler handler, String name, int x, int y, int width, int height) {
         super(handler, x, y, width, height);
         this.name = name;
-        health = DEFAULT_HEALTH;
         speed = DEFAULT_SPEED;
         xMove = 0;
         yMove = 0;
@@ -33,7 +30,7 @@ public abstract class Creature extends Entity {
 
     public void move() {
         if (xMove != 0 || yMove != 0) {
-        if (!checkEntityColision(xMove, 0)) {
+            if (!checkEntityColision(xMove, 0)) {
                 moveX();
             }
             if (!checkEntityColision(0, yMove)) {
@@ -155,14 +152,6 @@ public abstract class Creature extends Entity {
 
     public void setScale(int scale) {
         this.scale = scale;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
     }
 
     public int getxMove() {

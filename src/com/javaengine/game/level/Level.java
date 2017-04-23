@@ -4,6 +4,7 @@ import com.javaengine.game.Game;
 import com.javaengine.game.entities.EntityManager;
 import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.entities.statics.Rock;
 import com.javaengine.game.entities.statics.Tree;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.tiles.Tile;
@@ -32,6 +33,7 @@ public class Level {
 
         for (int i = 0; i < 3; i++) {
             entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50));
+            entityManager.addEntity(new Rock(handler, 120 * (i + 1), 180));
         }
 
         loadLevelFromFile(path);

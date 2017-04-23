@@ -15,11 +15,11 @@ public class Assets {
     public static BufferedImage[] waterTile, waterWithPlayerTile;
 
     // entities
-    public static BufferedImage tree;
+    public static BufferedImage tree, rock;
     public static BufferedImage[] player;
 
     // UI
-    public static BufferedImage[] btn_start, btn_mp;
+    public static BufferedImage[] btn_start, btn_mp, lifeBar;
 
     public static void init() {
         SpriteSheet sheet = new SpriteSheet(ImageLoader.loadImage("/sprite_sheet.png"));
@@ -45,9 +45,10 @@ public class Assets {
         waterWithPlayerTile[3] = waterWithPlayerTile[1];
 
         // entities
-        tree = sheet.crop(0, WIDTH, WIDTH * 2, HEIGHT * 3);
+        tree = sheet.crop(0, WIDTH, HEIGHT * 2, HEIGHT * 3);
+        rock = sheet.crop(WIDTH * 2, HEIGHT * 1, WIDTH * 2, HEIGHT * 2);
 
-        player = new BufferedImage[14];
+        player = new BufferedImage[18];
 
         player[0] = sheet.crop(0 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
         player[1] = Utils.flipImage(player[0]);
@@ -70,17 +71,32 @@ public class Assets {
         player[12] = sheet.crop(4 * WIDTH, 24 * HEIGHT, WIDTH * 2, HEIGHT * 2);
 
         player[13] = Utils.flipImage(player[12]);
+        
+        player[14] = sheet.crop(10 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
+        
+        player[15] = sheet.crop(12 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
+        
+        player[16] = sheet.crop(8 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
+        player[17] = Utils.flipImage(player[16]);
+        
+        
 
         // UI
         btn_start = new BufferedImage[2];
 
         btn_start[0] = sheet.crop(0 * WIDTH, 18 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
         btn_start[1] = sheet.crop(0 * WIDTH, 20 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
-        
+
         btn_mp = new BufferedImage[2];
 
         btn_mp[0] = sheet.crop(4 * WIDTH, 18 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
         btn_mp[1] = sheet.crop(4 * WIDTH, 20 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
+        
+        lifeBar = new BufferedImage[3];
+        
+        lifeBar[0] = sheet.crop(WIDTH * 4, HEIGHT * 4, WIDTH * 2, HEIGHT);
+        lifeBar[1] = sheet.crop(WIDTH * 2, HEIGHT * 4, WIDTH * 2, HEIGHT);
+        lifeBar[2] = sheet.crop(0, HEIGHT * 4, WIDTH * 2, HEIGHT);
 
     }
 }

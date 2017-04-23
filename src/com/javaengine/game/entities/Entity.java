@@ -1,14 +1,22 @@
 package com.javaengine.game.entities;
 
+import com.javaengine.game.entities.creatures.Player;
+import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.level.tiles.Tile;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public abstract class Entity {
 
+    public static final int DEFAULT_HEALTH = 10;
+
     protected Handler handler;
     protected int x, y;
     protected int width, height;
+    protected float health, maxHealth;
+    protected boolean active, damage, isAttacking; // alive
     protected Rectangle bounds;
 
     public Entity(Handler handler, int x, int y, int width, int height) {
@@ -17,13 +25,60 @@ public abstract class Entity {
         this.y = y;
         this.width = width;
         this.height = height;
+        health = maxHealth = DEFAULT_HEALTH;
+        active = true;
+        damage = isAttacking = false;
 
         bounds = new Rectangle(0, 0, width, height);
     }
 
     public abstract void tick();
 
-    public abstract void render(Graphics g);
+    public void render(Graphics g) {
+        renderLifeBar(g);
+
+    }
+
+    public abstract void die();
+
+    public void hurt(float damageAmt) {
+        damage = true;
+        health -= damageAmt;
+        if (health <= 0) {
+            active = false;
+            die();
+        }
+    }
+
+    public void renderLifeBar(Graphics g) {
+        float healthPercentage = health / maxHealth;
+
+        if (this instanceof Player) {
+            g.setColor(Color.gray);
+            g.fillRect(20, 20, (int) maxHealth * 20, 12);
+
+            g.setColor(Color.red);
+            g.fillRect(20, 20, (int) (health * 20), 12);
+
+            g.setColor(Color.black);
+            g.drawRect(20, 20, (int) maxHealth * 20, 12);
+        }
+
+        if (damage) {
+
+            g.setColor(Color.gray);
+            g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
+                    width, 8);
+
+            g.setColor(Color.red);
+            g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
+                    (int) (width * healthPercentage), 8);
+
+            g.setColor(Color.black);
+            g.drawRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
+                    width, 8);
+        }
+    }
 
     public boolean checkEntityColision(int xOffset, int yOffset) {
         for (Entity e : handler.getLevel().getEntityManager().getEntities()) {
@@ -72,6 +127,38 @@ public abstract class Entity {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isDamage() {
+        return damage;
+    }
+
+    public void setDamage(boolean damage) {
+        this.damage = damage;
+    }
+
+    public boolean isIsAttacking() {
+        return isAttacking;
+    }
+
+    public void setIsAttacking(boolean isAttacking) {
+        this.isAttacking = isAttacking;
     }
 
 }

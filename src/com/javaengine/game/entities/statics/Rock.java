@@ -14,31 +14,31 @@ import java.awt.Graphics;
  *
  * @author leonardo
  */
-public class Tree extends StaticEntity {
+public class Rock extends StaticEntity {
 
-    public Tree(Handler handler, int x, int y) {
-        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 3);
+    public Rock(Handler handler, int x, int y) {
+        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 2);
 
-        bounds.x = 24; // espaço em pixel * 4
-        bounds.y = 38;
-        bounds.width = 20;
+        bounds.x = 12; // espaço em pixel * 4
+        bounds.y = 20;
+        bounds.width = 40;
         bounds.height = 42;
     }
-    
+
     @Override
     public void die() {
-        
+
     }
 
     @Override
     public void tick() {
-
+        
     }
 
     @Override
     public void render(Graphics g) {
         super.render(g);
-        g.drawImage(Assets.tree, x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset(), width, height, null);
+        g.drawImage(Assets.rock, x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset(), width, height, null);
 //        g.drawRect((x + bounds.x) - handler.getGameCamera().getxOffset(),
 //                (y + bounds.y) - handler.getGameCamera().getyOffset(),
 //                bounds.width, bounds.height);
