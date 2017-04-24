@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  *
@@ -46,5 +47,10 @@ public class Utils {
         gg.drawImage(image, image.getHeight(), 0, -image.getWidth(), image.getHeight(), null);
         gg.dispose();
         return newImage;
+    }
+
+    public static String getUniqueId() {
+        String id = UUID.randomUUID().toString();
+        return id.substring(0, 5);
     }
 }

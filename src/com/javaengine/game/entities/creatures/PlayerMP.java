@@ -14,8 +14,9 @@ public class PlayerMP extends Player {
 //        this.port = port;
 //    }
     
-    public PlayerMP(Handler handler, int x, int y, String username, InetAddress ipAddress, int port, boolean hasInput) {
+    public PlayerMP(Handler handler, int x, int y, String username, InetAddress ipAddress, int port, boolean hasInput, String uniqueId) {
         super(handler, x, y, username);
+        this.uniqueId = uniqueId;
         this.ipAddress = ipAddress;
         this.port = port;
         this.hasInput = hasInput;

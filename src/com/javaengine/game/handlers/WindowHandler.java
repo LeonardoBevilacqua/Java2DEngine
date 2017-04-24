@@ -1,5 +1,6 @@
 package com.javaengine.game.handlers;
 
+import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.net.packets.Packet01Disconnect;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -19,7 +20,8 @@ public class WindowHandler implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         if (handler.getSocketClient() != null) {
-            Packet01Disconnect packet = new Packet01Disconnect(handler.getLevel().getEntityManager().getPlayer().getUsername());
+            Player p = handler.getLevel().getEntityManager().getPlayer();
+            Packet01Disconnect packet = new Packet01Disconnect(p.getUniqueId(), p.getUsername());
             packet.writeData(handler.getSocketClient());
         }
         handler.getGame().stop();

@@ -16,8 +16,8 @@ import java.awt.Graphics;
  */
 public class Tree extends StaticEntity {
 
-    public Tree(Handler handler, int x, int y) {
-        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 3);
+    public Tree(Handler handler, int x, int y, String uniqueId) {
+        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 3, uniqueId);
 
         bounds.x = 24; // espaço em pixel * 4
         bounds.y = 38;

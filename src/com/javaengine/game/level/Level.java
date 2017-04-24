@@ -29,11 +29,11 @@ public class Level {
         entityManager = !isMultiplayer
                 ? new EntityManager(handler,player = new Player(handler, 10, 10, "Teste"))
                 
-                : new EntityManager(handler, player = new PlayerMP(handler, 10, 10, JOptionPane.showInputDialog("nome"), null, -1, true));
+                : new EntityManager(handler, player = new PlayerMP(handler, 10, 10, JOptionPane.showInputDialog("nome"), null, -1, true, Utils.getUniqueId()));
 
         for (int i = 0; i < 3; i++) {
-            entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50));
-            entityManager.addEntity(new Rock(handler, 120 * (i + 1), 180));
+            entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50, "T"+i));
+            entityManager.addEntity(new Rock(handler, 120 * (i + 1), 180, "R"+i));
         }
 
         loadLevelFromFile(path);

@@ -66,11 +66,11 @@ public final class EntityManager {
     }
 
     // MP
-    public synchronized void removePlayerMP(String username) {
+    public synchronized void removePlayerMP(String userId) {
         int index = 0;
         Entity p;
         for (Entity e : entitiesMP) {
-            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
+            if (e instanceof PlayerMP && ((PlayerMP) e).getUniqueId().equals(userId)) {
                 break;
             }
             index++;
@@ -80,10 +80,10 @@ public final class EntityManager {
         entities.remove(p);
     }
 
-    private int getPlayerMPIndex(String username) {
+    private int getPlayerMPIndex(String userId) {
         int index = 0;
         for (Entity e : entitiesMP) {
-            if (e instanceof PlayerMP && ((PlayerMP) e).getUsername().equals(username)) {
+            if (e instanceof PlayerMP && ((PlayerMP) e).getUniqueId().equals(userId)) {
                 break;
             }
             index++;
@@ -91,8 +91,8 @@ public final class EntityManager {
         return index;
     }
 
-    public void movePlayer(String username, int x, int y, int numSteps, boolean isMoving, int movingDir, boolean isAttacking) {
-        int index = getPlayerMPIndex(username);
+    public void movePlayer(String userId, int x, int y, int numSteps, boolean isMoving, int movingDir, boolean isAttacking) {
+        int index = getPlayerMPIndex(userId);
 
         PlayerMP player = (PlayerMP) entitiesMP.get(index);
 

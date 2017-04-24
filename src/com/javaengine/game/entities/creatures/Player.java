@@ -5,6 +5,7 @@ import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.animations.AnimationPlayer;
 import com.javaengine.game.level.tiles.Tile;
+import com.javaengine.game.net.packets.Packet03LevelUpdate;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -166,6 +167,16 @@ public class Player extends Creature {
             }
             if (e.getCollisionBounds(0, 0).intersects(attackRectangle)) {
                 e.hurt(1);
+
+                if (handler.getSocketClient() != null) {
+                    Packet03LevelUpdate packet = new Packet03LevelUpdate(
+                            e.getUniqueId(),
+                            e.getHealth(),
+                            e.isActive()
+                    );
+                    packet.writeData(handler.getSocketClient());
+                }
+
                 return;
             }
         }
@@ -180,9 +191,9 @@ public class Player extends Creature {
         setAnimation();
         if (hasInput) {
             handler.getGameCamera().centerOnEntity(this);
+            checkAttacks();
         }
         tickCount++;
-        checkAttacks();
     }
 
     @Override

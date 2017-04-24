@@ -5,23 +5,25 @@ import com.javaengine.game.net.GameServer;
 
 public class Packet00Login extends Packet {
 
-    private String username;
+    private String userId, username;
     private int x, y;
 
     public Packet00Login(byte[] data) {
         super(00);
         String[] dataArray = readData(data).split(",");
-        
-        this.username = dataArray[0];
+
+        this.userId = dataArray[0];
         this.x = Integer.parseInt(dataArray[1]);
         this.y = Integer.parseInt(dataArray[2]);
+        this.username = dataArray[3];
     }
 
-    public Packet00Login(String username, int x, int y) {
+    public Packet00Login(String userId, int x, int y, String username) {
         super(00);
-        this.username = username;
+        this.userId = userId;
         this.x = x;
         this.y = y;
+        this.username = username;
     }
 
     @Override
@@ -36,11 +38,11 @@ public class Packet00Login extends Packet {
 
     @Override
     public byte[] getData() {
-        return ("00" + this.username + "," + getX() + "," + getY()).getBytes();
+        return ("00" + this.userId + "," + getX() + "," + getY() + "," + this.username).getBytes();
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserId() {
+        return userId;
     }
 
     public int getX() {
@@ -50,4 +52,9 @@ public class Packet00Login extends Packet {
     public int getY() {
         return y;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
 }

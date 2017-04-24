@@ -5,7 +5,7 @@ import com.javaengine.game.net.GameServer;
 
 public class Packet02Move extends Packet {
 
-    private String username;
+    private String userId;
     private int x, y;
     private int numSteps = 0;
     private boolean isMoving;
@@ -15,7 +15,7 @@ public class Packet02Move extends Packet {
     public Packet02Move(byte[] data) {
         super(02);
         String[] dataArray = readData(data).split(",");
-        this.username = dataArray[0];
+        this.userId = dataArray[0];
         this.x = Integer.parseInt(dataArray[1]);
         this.y = Integer.parseInt(dataArray[2]);
         this.numSteps = Integer.parseInt(dataArray[3]);
@@ -24,9 +24,9 @@ public class Packet02Move extends Packet {
         this.isAttacking = Integer.parseInt(dataArray[6]) == 1;
     }
 
-    public Packet02Move(String username, int x, int y, int numSteps, boolean isMoving, int movingDir, boolean isAttacking) {
+    public Packet02Move(String userId, int x, int y, int numSteps, boolean isMoving, int movingDir, boolean isAttacking) {
         super(02);
-        this.username = username;
+        this.userId = userId;
         this.x = x;
         this.y = y;
         this.numSteps = numSteps;
@@ -48,7 +48,7 @@ public class Packet02Move extends Packet {
     @Override
     public byte[] getData() {
         return ("02"
-                + this.username
+                + this.userId
                 + "," + this.x
                 + "," + this.y
                 + "," + this.numSteps
@@ -57,8 +57,8 @@ public class Packet02Move extends Packet {
                 + "," + (this.isAttacking ? 1 : 0)).getBytes();
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserId() {
+        return userId;
     }
 
     public int getX() {

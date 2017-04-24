@@ -14,8 +14,9 @@ import com.javaengine.game.handlers.Handler;
  */
 public abstract class StaticEntity  extends Entity{
 
-    public StaticEntity(Handler handler, int x, int y, int width, int height) {
+    public StaticEntity(Handler handler, int x, int y, int width, int height, String uniqueId) {
         super(handler, x, y, width, height);
+        this.uniqueId = uniqueId;
     }
     
     

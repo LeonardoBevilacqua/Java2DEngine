@@ -16,13 +16,14 @@ import java.awt.Graphics;
  */
 public class Rock extends StaticEntity {
 
-    public Rock(Handler handler, int x, int y) {
-        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 2);
+    public Rock(Handler handler, int x, int y, String uniqueId) {
+        super(handler, x, y, Tile.TILE_WIDTH * 2, Tile.TILE_HEIGHT * 2, uniqueId);
 
         bounds.x = 12; // espaço em pixel * 4
         bounds.y = 20;
         bounds.width = 40;
         bounds.height = 42;
+
     }
 
     @Override
@@ -32,7 +33,7 @@ public class Rock extends StaticEntity {
 
     @Override
     public void tick() {
-        
+
     }
 
     @Override

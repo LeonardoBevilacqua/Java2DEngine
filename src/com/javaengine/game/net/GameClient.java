@@ -1,11 +1,10 @@
 package com.javaengine.game.net;
 
+import com.javaengine.game.entities.Entity;
 import com.javaengine.game.entities.creatures.PlayerMP;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.net.packets.Packet;
-import com.javaengine.game.net.packets.Packet00Login;
-import com.javaengine.game.net.packets.Packet01Disconnect;
-import com.javaengine.game.net.packets.Packet02Move;
+import com.javaengine.game.net.packets.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -71,13 +70,17 @@ public class GameClient extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet01Disconnect) packet).getUsername() + " has left the world...");
 
-                handler.getLevel().getEntityManager().removePlayerMP(((Packet01Disconnect) packet).getUsername());
+                handler.getLevel().getEntityManager().removePlayerMP(((Packet01Disconnect) packet).getUserId());
 
                 break;
             case MOVE:
                 packet = new Packet02Move(data);
                 handleMove(((Packet02Move) packet));
 
+                break;
+            case LEVEL_UPDATE:
+                packet = new Packet03LevelUpdate(data);
+                handleUpdate(((Packet03LevelUpdate) packet));
                 break;
         }
 
@@ -97,12 +100,21 @@ public class GameClient extends Thread {
         System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                 + packet.getUsername() + " has joined the game...");
 
-        PlayerMP player = new PlayerMP(handler, packet.getX(), packet.getY(), packet.getUsername(), address, port,false);
+        PlayerMP player = new PlayerMP(handler, packet.getX(), packet.getY(), packet.getUsername(), address, port, false, packet.getUserId());
 
         handler.getLevel().getEntityManager().addEntity(player);
     }
 
     private void handleMove(Packet02Move packet) {
-        this.handler.getLevel().getEntityManager().movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getNumSteps(), packet.isIsMoving(), packet.getMovingDir(),packet.isIsAttacking());
+        this.handler.getLevel().getEntityManager().movePlayer(packet.getUserId(), packet.getX(), packet.getY(), packet.getNumSteps(), packet.isIsMoving(), packet.getMovingDir(), packet.isIsAttacking());
+    }
+
+    private void handleUpdate(Packet03LevelUpdate packet) {
+        for(Entity e : this.handler.getLevel().getEntityManager().getEntities()){
+             if (e.getUniqueId().equals(packet.getId())) {
+                e.setActive(packet.isActive());
+                e.setHealth(packet.getHealth());
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.javaengine.game.net;
 
+import com.javaengine.game.entities.Entity;
 import com.javaengine.game.entities.creatures.PlayerMP;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.net.packets.Packet;
@@ -7,6 +8,7 @@ import com.javaengine.game.net.packets.Packet.PacketTypes;
 import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
 import com.javaengine.game.net.packets.Packet02Move;
+import com.javaengine.game.net.packets.Packet03LevelUpdate;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,7 +26,7 @@ public class GameServer extends Thread {
     public GameServer(Handler handler) {
         this.handler = handler;
         connectedPlayers = new ArrayList<>();
-        
+
         try {
             this.socket = new DatagramSocket(1331);
         } catch (SocketException ex) {
@@ -70,7 +72,7 @@ public class GameServer extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet00Login) packet).getUsername() + " has connected...");
 
-                PlayerMP player = new PlayerMP(handler, 100, 100, ((Packet00Login) packet).getUsername(), address, port, false);
+                PlayerMP player = new PlayerMP(handler, 100, 100, ((Packet00Login) packet).getUsername(), address, port, false, ((Packet00Login) packet).getUserId());
 
                 this.addConnection(player, ((Packet00Login) packet));
 
@@ -90,6 +92,10 @@ public class GameServer extends Thread {
 //                        + ((Packet02Move) packet).getX() + "," + ((Packet02Move) packet).getY());
                 this.handleMove(((Packet02Move) packet));
                 break;
+            case LEVEL_UPDATE:
+                packet = new Packet03LevelUpdate(data);
+                this.handleUpdate((Packet03LevelUpdate) packet);
+                break;
         }
 
     }
@@ -98,7 +104,7 @@ public class GameServer extends Thread {
         boolean alreadyConnected = false;
 
         for (PlayerMP p : connectedPlayers) {
-            if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
+            if (player.getUniqueId().equalsIgnoreCase(p.getUniqueId())) {
                 if (p.ipAddress == null) {
                     p.ipAddress = player.ipAddress;
                 }
@@ -109,7 +115,7 @@ public class GameServer extends Thread {
                 alreadyConnected = true;
             } else {
                 sendData(packet.getData(), p.ipAddress, p.port);
-                packet = new Packet00Login(p.getUsername(), p.getX(), p.getY());
+                packet = new Packet00Login(p.getUniqueId(), p.getX(), p.getY(), p.getUsername());
                 sendData(packet.getData(), player.ipAddress, player.port);
             }
         }
@@ -119,24 +125,24 @@ public class GameServer extends Thread {
     }
 
     public void removeConnection(Packet01Disconnect packet) {
-        this.connectedPlayers.remove(getPlayeMPIndex(packet.getUsername()));
+        this.connectedPlayers.remove(getPlayeMPIndex(packet.getUserId()));
 
         packet.writeData(this);
     }
 
-    public PlayerMP getPlayeMP(String username) {
+    public PlayerMP getPlayeMP(String userId) {
         for (PlayerMP player : connectedPlayers) {
-            if (player.getUsername().equals(username)) {
+            if (player.getUniqueId().equals(userId)) {
                 return player;
             }
         }
         return null;
     }
 
-    public int getPlayeMPIndex(String username) {
+    public int getPlayeMPIndex(String userId) {
         int index = 0;
         for (PlayerMP player : connectedPlayers) {
-            if (player.getUsername().equals(username)) {
+            if (player.getUniqueId().equals(userId)) {
                 break;
             }
             index++;
@@ -163,8 +169,8 @@ public class GameServer extends Thread {
     }
 
     private void handleMove(Packet02Move packet) {
-        if (getPlayeMP(packet.getUsername()) != null) {
-            int index = getPlayeMPIndex(packet.getUsername());
+        if (getPlayeMP(packet.getUserId()) != null) {
+            int index = getPlayeMPIndex(packet.getUserId());
 
             PlayerMP player = this.connectedPlayers.get(index);
 
@@ -175,6 +181,17 @@ public class GameServer extends Thread {
             player.setMovingDir(packet.getMovingDir());
 
             packet.writeData(this);
+        }
+    }
+    
+    private void handleUpdate(Packet03LevelUpdate packet){
+        for(Entity e : handler.getLevel().getEntityManager().getEntities()){
+            if (e.getUniqueId().equals(packet.getId())) {
+                e.setActive(packet.isActive());
+                e.setHealth(packet.getHealth());
+                
+                packet.writeData(this);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ import com.javaengine.game.net.packets.Packet02Move;
 
 public abstract class Creature extends Entity {
 
-    public static final int DEFAULT_SPEED  = 2,
+    public static final int DEFAULT_SPEED = 2,
             DEFAULT_CRETURE_WIDTH = 64,
             DEFAULT_CRETURE_HEIGHT = 64;
     protected final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
@@ -42,7 +42,7 @@ public abstract class Creature extends Entity {
         if (handler.getSocketClient() != null) {
 
             Packet02Move packet = new Packet02Move(
-                    this.name,
+                    this.uniqueId,
                     this.x,
                     this.y,
                     this.numSteps,

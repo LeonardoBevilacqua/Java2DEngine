@@ -9,13 +9,12 @@ import javax.swing.JOptionPane;
 
 public class LevelMP extends Level {
 
-
     // MP
     private GameClient socketClient;
     private GameServer socketServer;
 
     public LevelMP(Handler handler, String path, boolean isMultiplayer) {
-        super(handler, path,isMultiplayer);
+        super(handler, path, isMultiplayer);
 
         // temporary
         if (JOptionPane.showConfirmDialog(handler.getGame().getDisplay().getFrame(), "Do you want to run the server?") == 0) {
@@ -29,10 +28,7 @@ public class LevelMP extends Level {
         socketClient.start();
         handler.setSocketClient(socketClient);
 
-        
-
-        
-        Packet00Login loginPacket = new Packet00Login(player.getUsername(), player.getX(), player.getY());
+        Packet00Login loginPacket = new Packet00Login(player.getUniqueId(), player.getX(), player.getY(), player.getUsername());
         if (handler.getSocketServer() != null) {
             handler.getSocketServer().addConnection((PlayerMP) player, loginPacket);
         }

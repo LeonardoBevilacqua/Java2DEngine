@@ -2,6 +2,7 @@ package com.javaengine.game.entities;
 
 import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -10,6 +11,7 @@ public abstract class Entity {
 
     public static final int DEFAULT_HEALTH = 10;
 
+    protected String uniqueId = "";
     protected Handler handler;
     protected int x, y;
     protected int width, height;
@@ -49,20 +51,20 @@ public abstract class Entity {
     }
 
     public void renderLifeBar(Graphics g) {
-        float healthPercentage = health / maxHealth;
+        float healthPercentage = this.health / this.maxHealth;
 
         if (this instanceof Player && handler.getLevel().getEntityManager().getPlayer().equals(this)) {
             g.setColor(Color.gray);
-            g.fillRect(20, 20, (int) maxHealth * 20, 12);
+            g.fillRect(20, 20, (int) this.maxHealth * 20, 12);
 
             g.setColor(Color.red);
-            g.fillRect(20, 20, (int) (health * 20), 12);
+            g.fillRect(20, 20, (int) (this.health * 20), 12);
 
             g.setColor(Color.black);
-            g.drawRect(20, 20, (int) maxHealth * 20, 12);
+            g.drawRect(20, 20, (int) this.maxHealth * 20, 12);
         }
 
-        if (damage && !(this instanceof Player)) {
+        if (damage && !this.equals(handler.getLevel().getEntityManager().getPlayer())) {
 
             g.setColor(Color.gray);
             g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
@@ -131,7 +133,7 @@ public abstract class Entity {
         return health;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(float health) {
         this.health = health;
     }
 
@@ -157,6 +159,10 @@ public abstract class Entity {
 
     public void setIsAttacking(boolean isAttacking) {
         this.isAttacking = isAttacking;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
     }
 
 }
