@@ -3,7 +3,6 @@ package com.javaengine.game.entities.creatures;
 import com.javaengine.game.entities.Entity;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.tiles.Tile;
-import com.javaengine.game.net.packets.Packet02Move;
 
 public abstract class Creature extends Entity {
 
@@ -37,20 +36,6 @@ public abstract class Creature extends Entity {
                 moveY();
             }
             isMoving = true;
-        }
-
-        if (handler.getSocketClient() != null) {
-
-            Packet02Move packet = new Packet02Move(
-                    this.uniqueId,
-                    this.x,
-                    this.y,
-                    this.numSteps,
-                    this.isMoving,
-                    this.movingDir,
-                    this.isAttacking
-            );
-            packet.writeData(handler.getSocketClient());
         }
 
         numSteps++;

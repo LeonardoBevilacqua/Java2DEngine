@@ -2,7 +2,6 @@ package com.javaengine.game.entities;
 
 import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.handlers.Handler;
-import com.javaengine.game.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;

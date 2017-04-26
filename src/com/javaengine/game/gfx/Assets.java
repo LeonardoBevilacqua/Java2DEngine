@@ -1,15 +1,20 @@
 package com.javaengine.game.gfx;
 
+import com.javaengine.game.utils.ImageLoader;
 import com.javaengine.game.utils.Utils;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 
 /**
- *
+ * The Assets class loads all the resources.
  * @author leonardo
  */
 public class Assets {
 
     private static final int WIDTH = 8, HEIGHT = 8;
+    // fonts
+    public static Font font28;
+    
     // tiles
     public static BufferedImage stoneTile, grassTile, voidTile, lavaTile;
     public static BufferedImage[] waterTile, waterWithPlayerTile;
@@ -19,9 +24,15 @@ public class Assets {
     public static BufferedImage[] player;
 
     // UI
+    public static BufferedImage inventoryScreen;
     public static BufferedImage[] btn_start, btn_mp, lifeBar;
 
+    /**
+     * Load the sprite sheet and initializes all the assets.
+     */
     public static void init() {
+        font28 = FontLoader.loadFont("res/Fonts/slkscr.ttf", 28);
+        
         SpriteSheet sheet = new SpriteSheet(ImageLoader.loadImage("/sprite_sheet.png"));
 
         // tiles
@@ -51,37 +62,39 @@ public class Assets {
         player = new BufferedImage[18];
 
         player[0] = sheet.crop(0 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        player[1] = Utils.flipImage(player[0]);
+        player[1] = Utils.flipImageHorizontally(player[0]);
 
         player[2] = sheet.crop(2 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        player[3] = Utils.flipImage(player[2]);
+        player[3] = Utils.flipImageHorizontally(player[2]);
 
         player[4] = sheet.crop(4 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
         player[5] = sheet.crop(6 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
 
-        player[6] = Utils.flipImage(player[4]);
-        player[7] = Utils.flipImage(player[5]);
+        player[6] = Utils.flipImageHorizontally(player[4]);
+        player[7] = Utils.flipImageHorizontally(player[5]);
 
         player[8] = sheet.crop(0 * WIDTH, 24 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        player[9] = Utils.flipImage(player[8]);
+        player[9] = Utils.flipImageHorizontally(player[8]);
 
         player[10] = sheet.crop(2 * WIDTH, 24 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        player[11] = Utils.flipImage(player[10]);
+        player[11] = Utils.flipImageHorizontally(player[10]);
 
         player[12] = sheet.crop(4 * WIDTH, 24 * HEIGHT, WIDTH * 2, HEIGHT * 2);
 
-        player[13] = Utils.flipImage(player[12]);
+        player[13] = Utils.flipImageHorizontally(player[12]);
         
         player[14] = sheet.crop(10 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
         
         player[15] = sheet.crop(12 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
         
         player[16] = sheet.crop(8 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        player[17] = Utils.flipImage(player[16]);
+        player[17] = Utils.flipImageHorizontally(player[16]);
         
         
 
         // UI
+        inventoryScreen = ImageLoader.loadImage("/inventoryScreen.png");
+        
         btn_start = new BufferedImage[2];
 
         btn_start[0] = sheet.crop(0 * WIDTH, 18 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);

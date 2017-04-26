@@ -5,6 +5,7 @@ import com.javaengine.game.entities.Entity;
 import com.javaengine.game.level.tiles.Tile;
 
 /**
+ * The GameCamera controls the position of the camera in the game.
  *
  * @author leonardo
  */
@@ -13,12 +14,22 @@ public class GameCamera {
     private Handler handler;
     private int xOffset, yOffset;
 
+    /**
+     * The constructor set the initial position of the camera.
+     *
+     * @param handler The handler of the game.
+     * @param xOffset The xOffset.
+     * @param yOffset The yOffset.
+     */
     public GameCamera(Handler handler, int xOffset, int yOffset) {
         this.handler = handler;
         this.xOffset = xOffset;
         this.yOffset = yOffset;
     }
 
+    /**
+     * Verifies if the screen is on the limit of the map.
+     */
     public void checkBlankSpace() {
         if (xOffset < 0) {
             xOffset = 0;
@@ -33,6 +44,10 @@ public class GameCamera {
         }
     }
 
+    /**
+     *Centers the camera on the main entity.
+     * @param e The entity that must be focused.
+     */
     public void centerOnEntity(Entity e) {
         xOffset = e.getX() - handler.getWidth() / 2 + e.getWidth() / 2;
         yOffset = e.getY() - handler.getHeight() / 2 + e.getHeight() / 2;
@@ -40,28 +55,21 @@ public class GameCamera {
         checkBlankSpace();
     }
 
-    public void move(int xAmt, int yAmt) {
-        xOffset += xAmt;
-        yOffset += yAmt;
-
-        checkBlankSpace();
-    }
-
     // getters and setters
+    
+    /**
+     * 
+     * @return Returns the xOffset.
+     */
     public int getxOffset() {
         return xOffset;
     }
 
-    public void setxOffset(int xOffset) {
-        this.xOffset = xOffset;
-    }
-
+    /**
+     * 
+     * @return Returns the yOffset.
+     */
     public int getyOffset() {
         return yOffset;
     }
-
-    public void setyOffset(int yOffset) {
-        this.yOffset = yOffset;
-    }
-
 }

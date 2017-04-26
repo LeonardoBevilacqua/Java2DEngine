@@ -7,6 +7,7 @@ import com.javaengine.game.entities.creatures.PlayerMP;
 import com.javaengine.game.entities.statics.Rock;
 import com.javaengine.game.entities.statics.Tree;
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.items.ItemManager;
 import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.utils.Utils;
 import java.awt.Graphics;
@@ -22,15 +23,18 @@ public class Level {
 
     // entities
     private final EntityManager entityManager;
+    // Item
+    private ItemManager itemManager;
 
     public Level(Handler handler, String path, boolean isMultiplayer) {
         this.handler = handler;
 
         entityManager = !isMultiplayer
-                ? new EntityManager(handler,player = new Player(handler, 10, 10, "Teste"))
-                
+                ? new EntityManager(handler,player = new Player(handler, 10, 10, "Teste"))                
                 : new EntityManager(handler, player = new PlayerMP(handler, 10, 10, JOptionPane.showInputDialog("nome"), null, -1, true, Utils.getUniqueId()));
 
+        itemManager = new ItemManager(handler);
+        
         for (int i = 0; i < 3; i++) {
             entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50, "T"+i));
             entityManager.addEntity(new Rock(handler, 120 * (i + 1), 180, "R"+i));
@@ -53,7 +57,8 @@ public class Level {
                 getTile(x, y).tick();
             }
         }
-        // entities
+        
+        itemManager.tick();
         entityManager.tick();
     }
 
@@ -69,7 +74,7 @@ public class Level {
                         (y * Tile.TILE_HEIGHT - handler.getGameCamera().getyOffset()));
             }
         }
-        // entities
+        itemManager.render(g);
         entityManager.render(g);
     }
 
@@ -137,4 +142,13 @@ public class Level {
     public EntityManager getEntityManager() {
         return entityManager;
     }
+
+    public ItemManager getItemManager() {
+        return itemManager;
+    }
+
+    public void setItemManager(ItemManager itemManager) {
+        this.itemManager = itemManager;
+    }
+    
 }

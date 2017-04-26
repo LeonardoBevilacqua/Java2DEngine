@@ -1,35 +1,42 @@
 package com.javaengine.game;
 
-import com.javaengine.game.handlers.Handler;
-import com.javaengine.game.handlers.input.InputHandler;
 import com.javaengine.game.display.Display;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.GameCamera;
+import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.handlers.WindowHandler;
+import com.javaengine.game.handlers.input.InputHandler;
 import com.javaengine.game.handlers.input.MouseManager;
 import com.javaengine.game.states.MenuState;
 import com.javaengine.game.states.State;
 import com.javaengine.game.utils.DebugMode;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import javax.swing.JOptionPane;
 
+/**
+ * Game class is the core of the game. It sets the dimension of the game and
+ * start the main components. Also is responsible to update all variables of the
+ * game and render the game.
+ *
+ * @author leonardo
+ */
 public class Game implements Runnable {
 
-// PUBLIC STATIC FINAL VARIABLES
+// STATIC VARIABLES
     public static final String NAME = "Game2dEngine";
     public static final int GAME_WIDTH = 160, GAME_HEIGHT = GAME_WIDTH / 12 * 9;
     public static final int SCALE = 3;
+    public static final boolean DEBUG = true;
 
 // PRIVATE VARIBLES
     private Thread thread;
-
     private boolean running = false;
-    private boolean debug = true;
     private int tickCount = 0;
     private int width, height;
-    
     private DebugMode debugMode;
 
+    // Window
     private Display display;
 
     // graphics
@@ -37,9 +44,7 @@ public class Game implements Runnable {
     private Graphics g;
 
     // states
-    //private State gameState;
     private State menuState;
-    //private State mpGameState;
 
     // input
     private InputHandler input;
@@ -54,18 +59,25 @@ public class Game implements Runnable {
     // handler
     private Handler handler;
 
+    // frame limiter
+    private boolean frameLimiter;
+
+    /**
+     * Initializes all the components that were defined in the Game class.
+     */
     public void init() {
         handler = new Handler(this);
-        debugMode = new DebugMode(handler);
 
         width = GAME_WIDTH * SCALE;
         height = GAME_HEIGHT * SCALE;
         display = new Display(NAME, width, height);
+        frameLimiter = false;
+        debugMode = new DebugMode(handler);
 
         // ADD THE CONTROLLERS OF THE GAME  
         input = new InputHandler();
         display.getCanvas().addKeyListener(input);
-        
+
         mouseManager = new MouseManager();
         display.getFrame().addMouseListener(mouseManager);
         display.getFrame().addMouseMotionListener(mouseManager);
@@ -78,13 +90,14 @@ public class Game implements Runnable {
         Assets.init();
         gameCamera = new GameCamera(handler, 0, 0);
 
-        //gameState = new GameState(handler);
         menuState = new MenuState(handler);
-        //mpGameState = new MPGameState(handler);
-        
+
         State.setState(menuState);
     }
 
+    /**
+     * Starts the thread if isn't already started.
+     */
     public synchronized void start() {
         if (running) {
             return;
@@ -94,6 +107,9 @@ public class Game implements Runnable {
         thread.start();
     }
 
+    /**
+     * Ends the thread if isn't already stopped.
+     */
     public synchronized void stop() {
         if (!running) {
             return;
@@ -107,6 +123,9 @@ public class Game implements Runnable {
         }
     }
 
+    /**
+     * Starts the core of the game.
+     */
     @Override
     public void run() {
         long lastTime = System.nanoTime();
@@ -121,7 +140,7 @@ public class Game implements Runnable {
             long now = System.nanoTime();
             delta += (now - lastTime) / nsPerTick;
             lastTime = now;
-            boolean shouldRender = true; // frames limiter (false to make work)
+            boolean shouldRender = !frameLimiter;
 
             while (delta >= 1) {
                 ticks++;
@@ -133,6 +152,8 @@ public class Game implements Runnable {
             try { // avoid system overload
                 Thread.sleep(2);
             } catch (InterruptedException ex) {
+                JOptionPane.showMessageDialog(display.getFrame(),
+                        ex.getMessage(), "Erro na Thread", JOptionPane.ABORT);
                 ex.printStackTrace();
             }
 
@@ -143,14 +164,27 @@ public class Game implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                DebugMode.debug(DebugMode.DebugLevel.NOTSHOW, (ticks + " ticks, " + frames + " frames"));
+                debugMode.debug(DebugMode.DebugLevel.NOTSHOW, (ticks + " ticks, " + frames + " frames"));
                 frames = 0;
                 ticks = 0;
             }
         }
     }
+    
+    /**
+     * Verify if the screen dimensions has changed. Updates the variables if necessary.
+     */
+    private void checkWindow() {
+        if (width != display.getFrame().getWidth()
+                || height != display.getFrame().getHeight()) {
+            width = display.getFrame().getWidth();
+            height = display.getFrame().getHeight();
+        }
+    }
 
-    // update the logic of the game
+    /**
+     * Updates all variables of the game.
+     */
     public void tick() {
         tickCount++;
 
@@ -161,7 +195,9 @@ public class Game implements Runnable {
         checkWindow();
     }
 
-    // update the visual of the game
+    /**
+     * Updates the screen of the game.
+     */
     public void render() {
         bs = display.getCanvas().getBufferStrategy();
         if (bs == null) {
@@ -183,58 +219,69 @@ public class Game implements Runnable {
         bs.show();
     }
 
-    private void checkWindow() {
-        if (width != display.getFrame().getWidth()
-                || height != display.getFrame().getHeight()) {
-            width = display.getFrame().getWidth();
-            height = display.getFrame().getHeight();
-        }
-    }
-
     // getters and setters
+    
+    /**
+     * 
+     * @return Returns the object of the display.
+     */
     public Display getDisplay() {
         return display;
     }
 
+    /**
+     * 
+     * @return Returns the object of the keyboard input.
+     */
     public InputHandler getInput() {
         return input;
     }
-    
-    public MouseManager getMouseManager(){
+
+    /**
+     * 
+     * @return Returns the object of the mouse input.
+     */
+    public MouseManager getMouseManager() {
         return mouseManager;
     }
 
+    /**
+     * 
+     * @return Returns the object of the game's camera.
+     */
     public GameCamera getGameCamera() {
         return gameCamera;
     }
 
+    /**
+     * 
+     * @return Returns the width of the game.
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * 
+     * @return Returns the height of the game.
+     */
     public int getHeight() {
         return height;
     }
 
-//    public State getGameState() {
-//        return gameState;
-//    }
-    
+    /**
+     * 
+     * @return Returns the object of the menu state.
+     */
     public State getMenuState() {
         return menuState;
     }
-    
-//    public State getMPGameState() {
-//        return mpGameState;
-//    }
 
-    public boolean isDebug() {
-        return debug;
-    }
-
+    /**
+     * 
+     * @return Returns if the game is running or not.
+     */
     public boolean isRunning() {
         return running;
     }
-
-    
 }

@@ -9,6 +9,7 @@ public class InputHandler implements KeyListener {
 
         private int numTimesPressed = 0;
         private boolean pressed = false;
+        private boolean justPressed = false;
 
         public int getNumTimesPressed() {
             return numTimesPressed;
@@ -16,6 +17,18 @@ public class InputHandler implements KeyListener {
 
         public boolean isPressed() {
             return pressed;
+        }
+
+        public boolean wasJustPressed() {
+            return justPressed;
+        }
+
+        public void setJustPressed() {
+            justPressed = !justPressed;
+        }
+
+        public void setPressed(boolean pressed) {
+            this.pressed = pressed;
         }
 
         public void toggle(boolean isPressed) {
@@ -31,6 +44,10 @@ public class InputHandler implements KeyListener {
     public Key left = new Key();
     public Key right = new Key();
     public Key meleeAtack = new Key();
+
+    public Key inventory = new Key();
+    public Key inventoryUp = new Key();
+    public Key inventoryDown = new Key();
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -62,6 +79,16 @@ public class InputHandler implements KeyListener {
         if (keyCode == KeyEvent.VK_SPACE) {
             meleeAtack.toggle(isPressed);
         }
+        if (keyCode == KeyEvent.VK_I) {
+            if (isPressed) {
+                inventory.setJustPressed();
+            }
+        }
+        if (keyCode == KeyEvent.VK_UP) {
+            inventoryUp.toggle(isPressed);
+        }
+        if (keyCode == KeyEvent.VK_DOWN) {
+            inventoryDown.toggle(isPressed);
+        }
     }
-
 }

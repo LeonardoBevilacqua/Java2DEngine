@@ -7,6 +7,7 @@ package com.javaengine.game.entities.statics;
 
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.items.Item;
 import com.javaengine.game.level.tiles.Tile;
 import java.awt.Graphics;
 
@@ -27,7 +28,7 @@ public class Tree extends StaticEntity {
     
     @Override
     public void die() {
-        
+        handler.getLevel().getItemManager().addItem(Item.woodItem.createNew(x, y));
     }
 
     @Override

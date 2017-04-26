@@ -4,7 +4,9 @@ import com.javaengine.game.entities.Entity;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.animations.AnimationPlayer;
+import com.javaengine.game.inventory.Inventory;
 import com.javaengine.game.level.tiles.Tile;
+import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -26,6 +28,9 @@ public class Player extends Creature {
     // attack timer
     private long lastAttackTimer, attackCooldown = 1000, attackTimer = attackCooldown;
 
+    // Inventory
+    private Inventory inventory;
+
     public Player(Handler handler, int x, int y, String username) {
         super(handler, username, x, y, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT);
         this.USERNAME = username;
@@ -37,6 +42,8 @@ public class Player extends Creature {
 
         // animation
         walkingAnimation = new AnimationPlayer(speed * 100, Assets.player);
+
+        inventory = new Inventory(handler);
 
         DIRECTIONS[UP] = new int[]{0, 1};
         DIRECTIONS[DOWN] = new int[]{2, 3};
@@ -57,29 +64,29 @@ public class Player extends Creature {
     }
 
     public void checkMove() {
-        if (hasInput) {
-            xMove = 0;
-            yMove = 0;
-            isMoving = false;
 
-            if (handler.getInput().up.isPressed()) {
-                yMove += -speed;
-            }
-            if (handler.getInput().down.isPressed()) {
-                yMove += speed;
-            }
-            if (handler.getInput().left.isPressed()) {
-                xMove += -speed;
-            }
-            if (handler.getInput().right.isPressed()) {
-                xMove += speed;
-            }
-            if (handler.getInput().meleeAtack.isPressed()) {
-                isAttacking = true;
-            } else {
-                isAttacking = false;
-            }
+        xMove = 0;
+        yMove = 0;
+        isMoving = false;
+
+        if (handler.getInput().up.isPressed()) {
+            yMove += -speed;
         }
+        if (handler.getInput().down.isPressed()) {
+            yMove += speed;
+        }
+        if (handler.getInput().left.isPressed()) {
+            xMove += -speed;
+        }
+        if (handler.getInput().right.isPressed()) {
+            xMove += speed;
+        }
+        if (handler.getInput().meleeAtack.isPressed()) {
+            isAttacking = true;
+        } else {
+            isAttacking = false;
+        }
+
     }
 
     private void setAnimation() {
@@ -166,7 +173,7 @@ public class Player extends Creature {
                 continue;
             }
             if (e.getCollisionBounds(0, 0).intersects(attackRectangle)) {
-                e.hurt(1);
+                e.hurt(3);
 
                 if (handler.getSocketClient() != null) {
                     Packet03LevelUpdate packet = new Packet03LevelUpdate(
@@ -184,16 +191,41 @@ public class Player extends Creature {
 
     @Override
     public void tick() {
-        // move
+        inventory.tick();
         checkSwimming();
-        checkMove();
-        move();
-        setAnimation();
+
+        if (inventory.isActive()) {
+            return;
+        }
+
         if (hasInput) {
             handler.getGameCamera().centerOnEntity(this);
             checkAttacks();
+            checkMove();
         }
+        if (!isAttacking) {
+            move();
+        }
+        sendPlayerData();
+        setAnimation();
+
         tickCount++;
+    }
+
+    private void sendPlayerData() {
+        if (handler.getSocketClient() != null) {
+
+            Packet02Move packet = new Packet02Move(
+                    this.uniqueId,
+                    this.x,
+                    this.y,
+                    this.numSteps,
+                    this.isMoving,
+                    this.movingDir,
+                    this.isAttacking
+            );
+            packet.writeData(handler.getSocketClient());
+        }
     }
 
     @Override
@@ -202,6 +234,10 @@ public class Player extends Creature {
 
         g.drawImage(getCurrentAnimationFrame(), x - handler.getGameCamera().getxOffset(),
                 y - handler.getGameCamera().getyOffset(), width, height, null);
+    }
+
+    public void postRender(Graphics g) {
+        inventory.render(g);
     }
 
     private BufferedImage getCurrentAnimationFrame() {
@@ -215,4 +251,9 @@ public class Player extends Creature {
     public boolean isIsSwimming() {
         return isSwimming;
     }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
 }

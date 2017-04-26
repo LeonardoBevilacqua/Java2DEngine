@@ -9,17 +9,35 @@ import static com.javaengine.game.Game.NAME;
 import com.javaengine.game.handlers.Handler;
 
 /**
+ * DebugMode class allows to manage debug states, showing a message and if
+ * necessary stopping the game.
  *
  * @author leonardo
  */
 public class DebugMode {
+
     private static Handler handler;
 
+    /**
+     * The constructor needs a handler to have access of the components of the
+     * game.
+     *
+     * @param handler The handler of the game.
+     */
     public DebugMode(Handler handler) {
         DebugMode.handler = handler;
     }
-    
-    public static void debug(DebugLevel level, String msg) {
+
+    /**
+     * Prints a message in the console showing the level of debug. 
+     * INFO level will appear if debug is set to true; 
+     * WARNING level will always appear;
+     * SEVERE level will show the message and stop the game.
+     *
+     * @param level The level of debug.
+     * @param msg The message that must show.
+     */
+    public void debug(DebugLevel level, String msg) {
         switch (level) {
             default:
             case INFO:
@@ -39,6 +57,9 @@ public class DebugMode {
         }
     }
 
+    /**
+     * DebugLevel enum keeps all the levels of debug.
+     */
     public static enum DebugLevel {
         INFO, WARNING, SEVERE, NOTSHOW;
     }

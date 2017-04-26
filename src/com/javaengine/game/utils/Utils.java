@@ -6,13 +6,21 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
+import javax.swing.JOptionPane;
 
 /**
+ * The Utils class has static methods to be used as tools.
  *
  * @author leonardo
  */
 public class Utils {
 
+    /**
+     * This method loads a file and returns the text.
+     *
+     * @param path The path of the file.
+     * @return Returns all the text as a string.
+     */
     public static String loadFileAsString(String path) {
         StringBuilder builder = new StringBuilder();
 
@@ -31,6 +39,12 @@ public class Utils {
         return builder.toString();
     }
 
+    /**
+     * Takes a string and convert to a integer.
+     *
+     * @param number The number as a string.
+     * @return Returns the as a integer.
+     */
     public static int parseInt(String number) {
         try {
             return Integer.parseInt(number);
@@ -40,8 +54,13 @@ public class Utils {
         }
     }
 
-    public static BufferedImage flipImage(BufferedImage image) {
-        // Flip the image horizontally
+    /**
+     * Flip the image horizontally.
+     *
+     * @param image The image that should be flipped horizontally.
+     * @return Returns the image flipped horizontally.
+     */
+    public static BufferedImage flipImageHorizontally(BufferedImage image) {
         BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D gg = newImage.createGraphics();
         gg.drawImage(image, image.getHeight(), 0, -image.getWidth(), image.getHeight(), null);
@@ -49,6 +68,11 @@ public class Utils {
         return newImage;
     }
 
+    /**
+     * Create a unique five-character ID.
+     *
+     * @return Returns the ID.
+     */
     public static String getUniqueId() {
         String id = UUID.randomUUID().toString();
         return id.substring(0, 5);
