@@ -1,8 +1,10 @@
 package com.javaengine.game;
 
 import com.javaengine.game.display.Display;
+import com.javaengine.game.display.ScreenManager;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.GameCamera;
+import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.handlers.WindowHandler;
 import com.javaengine.game.handlers.input.InputHandler;
@@ -10,6 +12,8 @@ import com.javaengine.game.handlers.input.MouseManager;
 import com.javaengine.game.states.MenuState;
 import com.javaengine.game.states.State;
 import com.javaengine.game.utils.DebugMode;
+import java.awt.Color;
+import java.awt.DisplayMode;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import javax.swing.JOptionPane;
@@ -35,9 +39,13 @@ public class Game implements Runnable {
     private int tickCount = 0;
     private int width, height;
     private DebugMode debugMode;
+    private int lastFrame;
+    private int lastTick;
 
     // Window
     private Display display;
+    private ScreenManager screen;
+    private String[] resolutions;
 
     // graphics
     private BufferStrategy bs;
@@ -86,6 +94,12 @@ public class Game implements Runnable {
 
         window = new WindowHandler(handler);
         display.getFrame().addWindowListener(window);
+        screen = new ScreenManager();
+        resolutions = new String[screen.getAllCompatibleDisplayModes().length];
+        for (int i = 0; i < resolutions.length; i++) {
+            resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "x"
+                    + screen.getAllCompatibleDisplayModes()[i].getHeight();
+        }
 
         Assets.init();
         gameCamera = new GameCamera(handler, 0, 0);
@@ -164,15 +178,18 @@ public class Game implements Runnable {
 
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
-                debugMode.debug(DebugMode.DebugLevel.NOTSHOW, (ticks + " ticks, " + frames + " frames"));
+                lastFrame = frames;
+                lastTick = ticks;
+
                 frames = 0;
                 ticks = 0;
             }
         }
     }
-    
+
     /**
-     * Verify if the screen dimensions has changed. Updates the variables if necessary.
+     * Verify if the screen dimensions has changed. Updates the variables if
+     * necessary.
      */
     private void checkWindow() {
         if (width != display.getFrame().getWidth()
@@ -190,6 +207,27 @@ public class Game implements Runnable {
 
         if (State.getCurrentState() != null) {
             State.getCurrentState().tick();
+        }
+
+        if (input.f11.isPressed()) {
+            input.f11.setPressed(false);
+            if (screen.getFullScreenWindow() == null) {
+                String resolution = (String) JOptionPane.showInputDialog(null, "Resolução", "Falso UI", JOptionPane.QUESTION_MESSAGE, null,
+                        resolutions, resolutions[0]);
+                int index = 0;
+
+                for (int i = 0; i < resolutions.length; i++) {
+                    if (resolutions[i].equals(resolution)) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                screen.setFullScreen(display,screen.getAllCompatibleDisplayModes()[index]);
+            } else {
+                screen.setWindowScreen();
+                display.getFrame().setSize(width, height);
+            }
         }
 
         checkWindow();
@@ -214,15 +252,16 @@ public class Game implements Runnable {
             State.getCurrentState().render(g);
         }
 
+        Text.drawString(g, "FPS: " + lastFrame + " TICKS: " + lastTick, 0, 10, false, Color.GREEN, Assets.font16);
+
         // end draw
         g.dispose();
         bs.show();
     }
 
     // getters and setters
-    
     /**
-     * 
+     *
      * @return Returns the object of the display.
      */
     public Display getDisplay() {
@@ -230,7 +269,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the object of the keyboard input.
      */
     public InputHandler getInput() {
@@ -238,7 +277,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the object of the mouse input.
      */
     public MouseManager getMouseManager() {
@@ -246,7 +285,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the object of the game's camera.
      */
     public GameCamera getGameCamera() {
@@ -254,7 +293,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the width of the game.
      */
     public int getWidth() {
@@ -262,7 +301,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the height of the game.
      */
     public int getHeight() {
@@ -270,7 +309,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns the object of the menu state.
      */
     public State getMenuState() {
@@ -278,7 +317,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return Returns if the game is running or not.
      */
     public boolean isRunning() {

@@ -52,9 +52,9 @@ public class Display {
         frame.setLayout(new BorderLayout());
         frame.add(canvas, BorderLayout.CENTER);
         frame.pack();
-
-        //windowHandler = new WindowHandler(new Game());
     } 
+    
+    
 
     public Canvas getCanvas() {
         return canvas;

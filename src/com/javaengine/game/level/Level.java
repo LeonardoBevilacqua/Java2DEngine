@@ -3,71 +3,66 @@ package com.javaengine.game.level;
 import com.javaengine.game.Game;
 import com.javaengine.game.entities.EntityManager;
 import com.javaengine.game.entities.creatures.Player;
-import com.javaengine.game.entities.creatures.PlayerMP;
-import com.javaengine.game.entities.statics.Rock;
-import com.javaengine.game.entities.statics.Tree;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.items.ItemManager;
 import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.utils.Utils;
 import java.awt.Graphics;
-import javax.swing.JOptionPane;
 
-public class Level {
+public abstract class Level {
 
-    private final Handler handler;
-    private int width, height;
-    private int spawnX, spawnY;
+    protected final Handler handler;
+    protected String path;
+    protected int width, height;
+    protected int spawnX, spawnY;
+    // camera position
+    private int xStart, yStart, xEnd, yEnd;
     private int[][] tiles;
     protected Player player;
 
     // entities
-    private final EntityManager entityManager;
+    protected EntityManager entityManager;
     // Item
-    private ItemManager itemManager;
+    protected ItemManager itemManager;
 
-    public Level(Handler handler, String path, boolean isMultiplayer) {
+    public Level(Handler handler, String path, Player player) {
         this.handler = handler;
+        this.path = path;
+        this.player = player;
+        init();
+    }
 
-        entityManager = !isMultiplayer
-                ? new EntityManager(handler,player = new Player(handler, 10, 10, "Teste"))                
-                : new EntityManager(handler, player = new PlayerMP(handler, 10, 10, JOptionPane.showInputDialog("nome"), null, -1, true, Utils.getUniqueId()));
-
-        itemManager = new ItemManager(handler);
+    protected final void init() {
+        entityManager = new EntityManager(handler, player);
         
-        for (int i = 0; i < 3; i++) {
-            entityManager.addEntity(new Tree(handler, 100 * (i + 1), 50, "T"+i));
-            entityManager.addEntity(new Rock(handler, 120 * (i + 1), 180, "R"+i));
-        }
+        itemManager = new ItemManager(handler);
 
         loadLevelFromFile(path);
-        
+
         entityManager.getPlayer().setX(spawnX);
         entityManager.getPlayer().setY(spawnY);
     }
 
-    public void tick() {
-        int xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
-        int xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
-        int yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
-        int yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
+    public void setCameraPosition() {
+        xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
+        xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
+        yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
+        yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
+    }
 
+    public void tick() {
+        setCameraPosition();
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
                 getTile(x, y).tick();
             }
         }
-        
+
         itemManager.tick();
         entityManager.tick();
     }
 
     public void render(Graphics g) {
-        int xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
-        int xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
-        int yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
-        int yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
-
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
                 getTile(x, y).render(g, (x * Tile.TILE_WIDTH - handler.getGameCamera().getxOffset()),
@@ -150,5 +145,5 @@ public class Level {
     public void setItemManager(ItemManager itemManager) {
         this.itemManager = itemManager;
     }
-    
+
 }

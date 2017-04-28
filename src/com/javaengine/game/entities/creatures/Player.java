@@ -3,11 +3,13 @@ package com.javaengine.game.entities.creatures;
 import com.javaengine.game.entities.Entity;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.gfx.Assets;
+import com.javaengine.game.gfx.Text;
 import com.javaengine.game.gfx.animations.AnimationPlayer;
 import com.javaengine.game.inventory.Inventory;
 import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -21,6 +23,7 @@ public class Player extends Creature {
 
     private final String USERNAME;
     private final int[][] DIRECTIONS = new int[12][2];
+    private BufferedImage[] texture;
 
 // animation
     private AnimationPlayer walkingAnimation;
@@ -31,9 +34,10 @@ public class Player extends Creature {
     // Inventory
     private Inventory inventory;
 
-    public Player(Handler handler, int x, int y, String username) {
+    public Player(Handler handler, int x, int y, String username, BufferedImage[] texture) {
         super(handler, username, x, y, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT);
         this.USERNAME = username;
+        this.texture = texture;
 
         bounds.x = 8 * 2;
         bounds.y = 20 * 2;
@@ -41,7 +45,7 @@ public class Player extends Creature {
         bounds.height = 8 * 2;
 
         // animation
-        walkingAnimation = new AnimationPlayer(speed * 100, Assets.player);
+        walkingAnimation = new AnimationPlayer(speed * 100, this.texture);
 
         inventory = new Inventory(handler);
 
@@ -234,6 +238,11 @@ public class Player extends Creature {
 
         g.drawImage(getCurrentAnimationFrame(), x - handler.getGameCamera().getxOffset(),
                 y - handler.getGameCamera().getyOffset(), width, height, null);
+
+        if (this instanceof PlayerMP && !this.equals(handler.getLevel().getEntityManager().getPlayer())) {
+            Text.drawString(g, USERNAME, x - handler.getGameCamera().getxOffset() + width / 2,
+                    y - handler.getGameCamera().getyOffset() - 16, true, Color.WHITE, Assets.font16);
+        }
     }
 
     public void postRender(Graphics g) {

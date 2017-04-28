@@ -3,10 +3,11 @@ package com.javaengine.game.utils;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
-import javax.swing.JOptionPane;
 
 /**
  * The Utils class has static methods to be used as tools.
@@ -25,7 +26,7 @@ public class Utils {
         StringBuilder builder = new StringBuilder();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream(path)));
             String line;
             while ((line = br.readLine()) != null) {
                 builder.append(line + "\n");

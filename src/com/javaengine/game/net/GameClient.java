@@ -2,6 +2,7 @@ package com.javaengine.game.net;
 
 import com.javaengine.game.entities.Entity;
 import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.*;
@@ -11,6 +12,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import javax.swing.JOptionPane;
 
 public class GameClient extends Thread {
 
@@ -24,10 +26,10 @@ public class GameClient extends Thread {
         try {
             this.socket = new DatagramSocket();
             this.ipAddress = InetAddress.getByName(ipAddress);
-        } catch (SocketException ex) {
+        } catch (SocketException | UnknownHostException ex) {
             ex.printStackTrace();
-        } catch (UnknownHostException ex) {
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            System.exit(1);
         }
     }
 
@@ -100,7 +102,7 @@ public class GameClient extends Thread {
         System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                 + packet.getUsername() + " has joined the game...");
 
-        PlayerMP player = new PlayerMP(handler, packet.getX(), packet.getY(), packet.getUsername(), address, port, false, packet.getUserId());
+        PlayerMP player = new PlayerMP(handler, packet.getX(), packet.getY(), packet.getUsername(),Assets.player, address, port, false, packet.getUserId());
 
         handler.getLevel().getEntityManager().addEntity(player);
     }

@@ -2,6 +2,7 @@ package com.javaengine.game.net;
 
 import com.javaengine.game.entities.Entity;
 import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.net.packets.Packet;
 import com.javaengine.game.net.packets.Packet.PacketTypes;
@@ -72,7 +73,7 @@ public class GameServer extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet00Login) packet).getUsername() + " has connected...");
 
-                PlayerMP player = new PlayerMP(handler, 100, 100, ((Packet00Login) packet).getUsername(), address, port, false, ((Packet00Login) packet).getUserId());
+                PlayerMP player = new PlayerMP(handler, 100, 100, ((Packet00Login) packet).getUsername(),Assets.player, address, port, false, ((Packet00Login) packet).getUserId());
 
                 this.addConnection(player, ((Packet00Login) packet));
 

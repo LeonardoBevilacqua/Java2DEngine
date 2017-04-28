@@ -14,6 +14,7 @@ public class Assets {
     private static final int WIDTH = 8, HEIGHT = 8;
     // fonts
     public static Font font28;
+    public static Font font16;
     
     // tiles
     public static BufferedImage stoneTile, grassTile, voidTile, lavaTile;
@@ -31,7 +32,8 @@ public class Assets {
      * Load the sprite sheet and initializes all the assets.
      */
     public static void init() {
-        font28 = FontLoader.loadFont("res/Fonts/slkscr.ttf", 28);
+        font28 = FontLoader.loadFont("/fonts/slkscr.ttf", 28);
+        font16 = FontLoader.loadFont("/fonts/slkscr.ttf", 16);
         
         SpriteSheet sheet = new SpriteSheet(ImageLoader.loadImage("/sprite_sheet.png"));
 

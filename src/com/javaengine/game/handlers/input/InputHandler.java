@@ -38,6 +38,8 @@ public class InputHandler implements KeyListener {
             }
         }
     }
+    
+    public Key f11 = new Key();
 
     public Key up = new Key();
     public Key down = new Key();
@@ -89,6 +91,10 @@ public class InputHandler implements KeyListener {
         }
         if (keyCode == KeyEvent.VK_DOWN) {
             inventoryDown.toggle(isPressed);
+        }
+        
+        if (keyCode == KeyEvent.VK_F11) {
+            f11.toggle(isPressed);
         }
     }
 }

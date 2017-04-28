@@ -1,9 +1,13 @@
 package com.javaengine.game.states;
 
+import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.Level;
-import com.javaengine.game.level.LevelMP;
+import com.javaengine.game.level.world.LevelMP1;
+import com.javaengine.game.utils.Utils;
 import java.awt.Graphics;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -14,8 +18,9 @@ public class MPGameState extends State {
     private Level level;
 
     public MPGameState(Handler handler) {
-        super(handler);
-        level = new LevelMP(handler, "res/levels/level1.txt", true);
+        super(handler);        
+        
+        level = new LevelMP1(handler, "/levels/level1.txt",new PlayerMP(handler, 0, 0, JOptionPane.showInputDialog("nome"), Assets.player, null, -1, true, Utils.getUniqueId()));
         handler.setLevel(level);
 
     }
