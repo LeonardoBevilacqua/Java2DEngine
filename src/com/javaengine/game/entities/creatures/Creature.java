@@ -19,8 +19,8 @@ public abstract class Creature extends Entity {
     protected int movingDir = 1;
     protected int scale = 1;
 
-    public Creature(Handler handler, String name, int x, int y, int width, int height) {
-        super(handler, x, y, width, height);
+    public Creature(Handler handler, String name, int width, int height) {
+        super(handler, width, height);
         this.name = name;
         speed = DEFAULT_SPEED;
         xMove = 0;

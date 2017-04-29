@@ -5,7 +5,6 @@
  */
 package com.javaengine.game.level.world;
 
-import com.javaengine.game.entities.EntityManager;
 import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.entities.statics.Rock;
 import com.javaengine.game.entities.statics.Tree;

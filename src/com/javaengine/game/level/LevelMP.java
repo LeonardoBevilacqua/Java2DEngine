@@ -19,18 +19,17 @@ public abstract class LevelMP extends Level {
         super(handler, path, player);
         initServer();
     }
-    
-    protected void initServer(){
+
+    protected void initServer() {
         // temporary
         if (JOptionPane.showConfirmDialog(handler.getGame().getDisplay().getFrame(), "Do you want to run the server?") == 0) {
 
             socketServer = new GameServer(handler);
             socketServer.start();
             handler.setSocketServer(socketServer);
-        
-            ipAdress = JOptionPane.showInputDialog("ENDEREÇO:");
-        }
 
+        }
+        ipAdress = JOptionPane.showInputDialog("ENDEREÇO:");
 
         socketClient = new GameClient(handler, ipAdress);
         socketClient.start();

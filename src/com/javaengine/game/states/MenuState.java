@@ -18,14 +18,17 @@ import java.awt.image.BufferedImage;
 public class MenuState extends State {
 
     private UIManager uiManager;
-    private int btnWidth = 200, btnHeight = 50, btnX = handler.getWidth() / 2 - btnWidth / 2, btnY = handler.getHeight() / 2;
+    private int btnWidth = 200, btnHeight = 50, btnX = handler.getWidth() / 2 - btnWidth / 2,
+            btnY = handler.getHeight() / 2;
     private BufferedImage bg = ImageLoader.loadImage("/background.png");
+
+    UIRectangleButton[] buttons;
 
     public MenuState(Handler handler) {
         super(handler);
         uiManager = new UIManager(handler);
 
-        UIRectangleButton[] buttons = new UIRectangleButton[3];
+        buttons = new UIRectangleButton[3];
 
         buttons[0] = new UIRectangleButton(btnX, btnY - btnHeight * 2 - 20, btnWidth, btnHeight, new Color[]{Color.gray, Color.black}, "Start Game", new ClickListener() {
             @Override
@@ -69,6 +72,17 @@ public class MenuState extends State {
     @Override
     public void tick() {
         uiManager.tick();
+        btnX = handler.getWidth() / 2 - btnWidth / 2;
+        btnY = handler.getHeight() / 2;
+
+        buttons[0].setX(btnX);
+        buttons[0].setY(btnY - btnHeight * 2 - 20);
+
+        buttons[1].setX(btnX);
+        buttons[1].setY(btnY - btnHeight + 20);
+
+        buttons[2].setX(btnX - 20);
+        buttons[2].setY(btnY + btnHeight);
     }
 
     @Override

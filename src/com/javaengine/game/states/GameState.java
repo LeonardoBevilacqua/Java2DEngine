@@ -19,7 +19,7 @@ public class GameState extends State {
     public GameState(Handler handler) {
         super(handler);
 
-       level = new Level1(handler, "/levels/level1.txt",new PlayerMP(handler, 0, 0, "teste", Assets.player, null, -1, true, Utils.getUniqueId()));
+        level = new Level1(handler, "/levels/level1.txt", new PlayerMP(handler, "teste", Assets.player, null, -1, true, Utils.getUniqueId()));
         handler.setLevel(level);
     }
 
@@ -32,11 +32,10 @@ public class GameState extends State {
     public void render(Graphics g) {
         level.render(g);
     }
-    
-    // getters and setters
 
+    // getters and setters
     public Level getLevel() {
         return level;
     }
-    
+
 }

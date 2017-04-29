@@ -14,8 +14,8 @@ public class PlayerMP extends Player {
 //        this.ipAddress = ipAddress;
 //        this.port = port;
 //    }
-    public PlayerMP(Handler handler, int x, int y, String username, BufferedImage[] texture, InetAddress ipAddress, int port, boolean hasInput, String uniqueId) {
-        super(handler, x, y, username, texture);
+    public PlayerMP(Handler handler, String username, BufferedImage[] texture, InetAddress ipAddress, int port, boolean hasInput, String uniqueId) {
+        super(handler, username, texture);
         this.uniqueId = uniqueId;
         this.ipAddress = ipAddress;
         this.port = port;

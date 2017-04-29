@@ -12,12 +12,12 @@ import com.javaengine.game.handlers.Handler;
  *
  * @author leonardo
  */
-public abstract class StaticEntity  extends Entity{
+public abstract class StaticEntity extends Entity {
 
     public StaticEntity(Handler handler, int x, int y, int width, int height, String uniqueId) {
-        super(handler, x, y, width, height);
+        super(handler, width, height);
         this.uniqueId = uniqueId;
+        this.setPosition(x, y);
     }
-    
-    
+
 }

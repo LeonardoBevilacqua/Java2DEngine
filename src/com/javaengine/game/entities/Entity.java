@@ -18,10 +18,10 @@ public abstract class Entity {
     protected boolean active, damage, isAttacking; // alive
     protected Rectangle bounds;
 
-    public Entity(Handler handler, int x, int y, int width, int height) {
+    public Entity(Handler handler, int width, int height) {
         this.handler = handler;
-        this.x = x;
-        this.y = y;
+        this.x = 20;
+        this.y = 20;
         this.width = width;
         this.height = height;
         this.health = maxHealth = DEFAULT_HEALTH;
@@ -47,6 +47,11 @@ public abstract class Entity {
             active = false;
             die();
         }
+    }
+
+    public final void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     public void renderLifeBar(Graphics g) {
@@ -110,14 +115,6 @@ public abstract class Entity {
 
     public int getHeight() {
         return height;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public void setWidth(int width) {

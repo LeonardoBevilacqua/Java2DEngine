@@ -18,9 +18,9 @@ public class MPGameState extends State {
     private Level level;
 
     public MPGameState(Handler handler) {
-        super(handler);        
-        
-        level = new LevelMP1(handler, "/levels/level1.txt",new PlayerMP(handler, 0, 0, JOptionPane.showInputDialog("nome"), Assets.player, null, -1, true, Utils.getUniqueId()));
+        super(handler);
+
+        level = new LevelMP1(handler, "/levels/level1.txt", new PlayerMP(handler, JOptionPane.showInputDialog("nome"), Assets.player, null, -1, true, Utils.getUniqueId()));
         handler.setLevel(level);
 
     }

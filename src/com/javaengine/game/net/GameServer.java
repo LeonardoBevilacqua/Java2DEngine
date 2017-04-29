@@ -10,12 +10,15 @@ import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
 import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
+import com.javaengine.game.net.packets.Packet04StartDomingo;
+import com.javaengine.game.states.DomingaoGameState;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class GameServer extends Thread {
@@ -24,15 +27,26 @@ public class GameServer extends Thread {
     private Handler handler;
     private List<PlayerMP> connectedPlayers;
 
+    // Domingo temporario
+    private long minutes;
+    public long minute, second;
+    public boolean started = false;
+
     public GameServer(Handler handler) {
         this.handler = handler;
         connectedPlayers = new ArrayList<>();
+        minutes = System.currentTimeMillis() + 120000;
 
         try {
             this.socket = new DatagramSocket(1331);
         } catch (SocketException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void checkTimer() {
+        minute = (minutes - System.currentTimeMillis()) / 60000;
+        second = (minutes - System.currentTimeMillis()) / 1000 - minute * 60;
     }
 
     public void run() {
@@ -47,13 +61,6 @@ public class GameServer extends Thread {
             }
 
             this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
-
-//            String message = new String(packet.getData());
-//            System.out.println("CLIENT [" + packet.getAddress().getHostAddress() + ":" + packet.getPort() + "] > " + message);
-//
-//            if (message.trim().equalsIgnoreCase("ping")) {
-//                sendData("pong".getBytes(), packet.getAddress(), packet.getPort());
-//            }
         }
     }
 
@@ -73,14 +80,14 @@ public class GameServer extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet00Login) packet).getUsername() + " has connected...");
 
-                PlayerMP player = new PlayerMP(handler, 100, 100, ((Packet00Login) packet).getUsername(),Assets.player, address, port, false, ((Packet00Login) packet).getUserId());
+                PlayerMP player = new PlayerMP(handler, ((Packet00Login) packet).getUsername(), Assets.player, address, port, false, ((Packet00Login) packet).getUserId());
+                player.setPosition(20, 20);
 
                 this.addConnection(player, ((Packet00Login) packet));
 
                 break;
             case DISCONNECT:
                 packet = new Packet01Disconnect(data);
-
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet01Disconnect) packet).getUsername() + " has left...");
 
@@ -88,14 +95,16 @@ public class GameServer extends Thread {
                 break;
             case MOVE:
                 packet = new Packet02Move(data);
-//                System.out.println(((Packet02Move) packet).getClass()
-//                        + " has moved to "
-//                        + ((Packet02Move) packet).getX() + "," + ((Packet02Move) packet).getY());
                 this.handleMove(((Packet02Move) packet));
                 break;
             case LEVEL_UPDATE:
                 packet = new Packet03LevelUpdate(data);
                 this.handleUpdate((Packet03LevelUpdate) packet);
+                break;
+
+            case START_DOMINGO:
+                packet = new Packet04StartDomingo(data);
+                this.handleStart((Packet04StartDomingo) packet);
                 break;
         }
 
@@ -175,8 +184,7 @@ public class GameServer extends Thread {
 
             PlayerMP player = this.connectedPlayers.get(index);
 
-            player.setX(packet.getX());
-            player.setY(packet.getY());
+            player.setPosition(packet.getX(), packet.getY());
             player.setNumSteps(packet.getNumSteps());
             player.setIsMoving(packet.isIsMoving());
             player.setMovingDir(packet.getMovingDir());
@@ -184,15 +192,34 @@ public class GameServer extends Thread {
             packet.writeData(this);
         }
     }
-    
-    private void handleUpdate(Packet03LevelUpdate packet){
-        for(Entity e : handler.getLevel().getEntityManager().getEntities()){
+
+    private void handleUpdate(Packet03LevelUpdate packet) {
+        Iterator<Entity> it = this.handler.getLevel().getEntityManager().getEntities().iterator();
+        while (it.hasNext()) {
+            Entity e = it.next();
             if (e.getUniqueId().equals(packet.getId())) {
                 e.setActive(packet.isActive());
                 e.setHealth(packet.getHealth());
-                
+
                 packet.writeData(this);
             }
         }
+    }
+
+    private void handleStart(Packet04StartDomingo packet) {
+        DomingaoGameState s = (DomingaoGameState) com.javaengine.game.states.State.getCurrentState();
+        s.jogadores = connectedPlayers.size();
+        if (s.jogadores >= 2) {
+            if (!s.started) {
+                minutes = System.currentTimeMillis() + 120000;
+                s.started = true;
+            }
+
+            checkTimer();
+            s.minute = minute;
+            s.second = second;
+
+        }
+        packet.writeData(this);
     }
 }

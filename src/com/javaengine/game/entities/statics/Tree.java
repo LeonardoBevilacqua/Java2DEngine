@@ -25,7 +25,7 @@ public class Tree extends StaticEntity {
         bounds.width = 20;
         bounds.height = 42;
     }
-    
+
     @Override
     public void die() {
         handler.getLevel().getItemManager().addItem(Item.woodItem.createNew(x, y));

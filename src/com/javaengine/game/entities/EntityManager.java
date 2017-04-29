@@ -18,7 +18,7 @@ public final class EntityManager {
     private Player player;
     private ArrayList<Entity> entities;
     private ArrayList<Entity> entitiesMP;
-    
+
     private final Comparator<Entity> renderSorter = (Entity a, Entity b) -> {
         if (a.getY() + a.getHeight() < b.getY() + b.getHeight()) {
             return -1;
@@ -36,7 +36,7 @@ public final class EntityManager {
 
     public void tick() {
         Iterator<Entity> it = entities.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Entity e = it.next();
             e.tick();
             if (!e.isActive()) {
@@ -48,7 +48,9 @@ public final class EntityManager {
     }
 
     public void render(Graphics g) {
-        for (Entity e : entities) {
+        Iterator<Entity> it = entities.iterator();
+        while (it.hasNext()) {
+            Entity e = it.next();
             e.render(g);
         }
         player.postRender(g);
@@ -99,8 +101,7 @@ public final class EntityManager {
 
         PlayerMP player = (PlayerMP) entitiesMP.get(index);
 
-        player.setX(x);
-        player.setY(y);
+        player.setPosition(x, y);
         player.setIsMoving(isMoving);
         player.setNumSteps(numSteps);
         player.setMovingDir(movingDir);

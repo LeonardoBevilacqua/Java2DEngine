@@ -3,22 +3,26 @@ package com.javaengine.game.level;
 import com.javaengine.game.Game;
 import com.javaengine.game.entities.EntityManager;
 import com.javaengine.game.entities.creatures.Player;
+import com.javaengine.game.gfx.Assets;
+import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.items.ItemManager;
 import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.utils.Utils;
+import java.awt.Color;
 import java.awt.Graphics;
 
 public abstract class Level {
 
     protected final Handler handler;
-    protected String path;
+    protected String path, msg;
     protected int width, height;
     protected int spawnX, spawnY;
     // camera position
     private int xStart, yStart, xEnd, yEnd;
     private int[][] tiles;
     protected Player player;
+    protected long timer;
 
     // entities
     protected EntityManager entityManager;
@@ -39,8 +43,8 @@ public abstract class Level {
 
         loadLevelFromFile(path);
 
-        entityManager.getPlayer().setX(spawnX);
-        entityManager.getPlayer().setY(spawnY);
+        //entityManager.getPlayer().setX(spawnX);
+        //entityManager.getPlayer().setY(spawnY);
     }
 
     public void setCameraPosition() {
@@ -61,6 +65,12 @@ public abstract class Level {
         itemManager.tick();
         entityManager.tick();
     }
+    
+    public void renderAlert(Graphics g){
+        if (msg != null &&System.currentTimeMillis() < timer) {
+            Text.drawString(g, msg, 10, handler.getHeight() - 100, false, Color.BLACK, Assets.font16);
+        }
+    }
 
     public void render(Graphics g) {
         for (int y = yStart; y < yEnd; y++) {
@@ -71,6 +81,7 @@ public abstract class Level {
         }
         itemManager.render(g);
         entityManager.render(g);
+        renderAlert(g);
     }
 
     public synchronized Tile getTile(int x, int y) {
@@ -146,4 +157,21 @@ public abstract class Level {
         this.itemManager = itemManager;
     }
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public long getTimer() {
+        return timer;
+    }
+
+    public void setTimer(long timer) {
+        this.timer = timer;
+    }
+
+    
 }

@@ -34,8 +34,8 @@ public class Player extends Creature {
     // Inventory
     private Inventory inventory;
 
-    public Player(Handler handler, int x, int y, String username, BufferedImage[] texture) {
-        super(handler, username, x, y, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT);
+    public Player(Handler handler, String username, BufferedImage[] texture) {
+        super(handler, username, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT);
         this.USERNAME = username;
         this.texture = texture;
 
@@ -130,7 +130,9 @@ public class Player extends Creature {
 
     @Override
     public void die() {
-        System.out.println("Voce morreu!");
+        if (this instanceof PlayerMP && this.equals(handler.getLevel().getEntityManager().getPlayer())) {
+            System.out.println("Voce morreu!");
+        }
     }
 
     // attack

@@ -13,7 +13,6 @@ import com.javaengine.game.states.MenuState;
 import com.javaengine.game.states.State;
 import com.javaengine.game.utils.DebugMode;
 import java.awt.Color;
-import java.awt.DisplayMode;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import javax.swing.JOptionPane;
@@ -200,15 +199,9 @@ public class Game implements Runnable {
     }
 
     /**
-     * Updates all variables of the game.
+     * Checks if the window is fullscreen.
      */
-    public void tick() {
-        tickCount++;
-
-        if (State.getCurrentState() != null) {
-            State.getCurrentState().tick();
-        }
-
+    private void checkFullScreen() {
         if (input.f11.isPressed()) {
             input.f11.setPressed(false);
             if (screen.getFullScreenWindow() == null) {
@@ -223,13 +216,24 @@ public class Game implements Runnable {
                     }
                 }
 
-                screen.setFullScreen(display,screen.getAllCompatibleDisplayModes()[index]);
+                screen.setFullScreen(display, screen.getAllCompatibleDisplayModes()[index]);
             } else {
                 screen.setWindowScreen();
-                display.getFrame().setSize(width, height);
             }
         }
+    }
 
+    /**
+     * Updates all variables of the game.
+     */
+    public void tick() {
+        tickCount++;
+
+        if (State.getCurrentState() != null) {
+            State.getCurrentState().tick();
+        }
+
+        checkFullScreen();
         checkWindow();
     }
 
@@ -245,7 +249,7 @@ public class Game implements Runnable {
 
         g = bs.getDrawGraphics();
         // clear screen
-        g.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        g.clearRect(0, 0, width, height);
 
         // draw        
         if (State.getCurrentState() != null) {
