@@ -9,6 +9,7 @@ import com.javaengine.game.utils.Utils;
 import java.awt.Graphics;
 
 /**
+ * The GameState is responsible to manage the game.
  *
  * @author leonardo
  */
@@ -16,18 +17,42 @@ public class GameState extends State {
 
     private Level level;
 
+    /**
+     * Initialize the game
+     *
+     * @param handler The handler of the game.
+     */
     public GameState(Handler handler) {
         super(handler);
 
-        level = new Level1(handler, "/levels/level1.txt", new PlayerMP(handler, "teste", Assets.player, null, -1, true, Utils.getUniqueId()));
+        level = new Level1(
+                handler,
+                "/levels/level1.txt",
+                new PlayerMP(
+                        handler,
+                        "teste",
+                        Assets.player,
+                        null, -1,
+                        true,
+                        Utils.getUniqueId()
+                )
+        );
         handler.setLevel(level);
     }
 
+    /**
+     * Updates the game logic.
+     */
     @Override
     public void tick() {
         level.tick();
     }
 
+    /**
+     * Draw the game.
+     *
+     * @param g The graphics object.
+     */
     @Override
     public void render(Graphics g) {
         level.render(g);

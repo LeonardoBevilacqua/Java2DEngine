@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 /**
+ * The item class is responsible to create the base of the items.
  *
  * @author leonardo
  */
@@ -35,6 +36,13 @@ public class Item {
     protected int x, y, count;
     protected boolean pickUp = false;
 
+    /**
+     * Create the base of the item.
+     *
+     * @param texture The texture of the item.
+     * @param name The name of the item.
+     * @param id The id of the item.
+     */
     public Item(BufferedImage texture, String name, int id) {
         this.texture = texture;
         this.name = name;
@@ -46,6 +54,9 @@ public class Item {
         items[id] = this;
     }
 
+    /**
+     * Verifies if an entity has taken the item.
+     */
     public void tick() {
         if (handler.getLevel().getEntityManager().getPlayer().getCollisionBounds(0, 0).intersects(bounds)) {
             pickUp = true;
@@ -53,6 +64,11 @@ public class Item {
         }
     }
 
+    /**
+     * Renders the item.
+     *
+     * @param g The graphic object.
+     */
     public void render(Graphics g) {
         if (handler == null) {
             return;
@@ -60,24 +76,37 @@ public class Item {
         render(g, x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset());
     }
 
+    /**
+     * Renders the item in a determined spot.
+     *
+     * @param g The graphic object.
+     * @param x The x position.
+     * @param y The y position.
+     */
     public void render(Graphics g, int x, int y) {
         g.drawImage(texture, x, y, ITEM_WIDTH, ITEM_HEIGHT, null);
     }
-    
-//    public Item createNew(int count){ // test code
-//        Item i = new Item(texture, name, id);
-//        i.setPickUp(true);
-//        i.setCount(count);
-//        return i;
-//    }
 
+    /**
+     * Create a new item
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @return Returns the item.
+     */
     public Item createNew(int x, int y) {
         Item i = new Item(texture, name, id);
         i.setPosition(x, y);
         return i;
     }
 
-    public void setPosition(int x, int y) {
+    /**
+     * Sets the position of the item.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     */
+    protected void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
         bounds.x = x;

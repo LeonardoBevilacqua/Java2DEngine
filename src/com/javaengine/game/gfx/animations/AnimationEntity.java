@@ -3,21 +3,29 @@ package com.javaengine.game.gfx.animations;
 import java.awt.image.BufferedImage;
 
 /**
+ * The AnimationEntity creates the animation of the entity.
  *
  * @author leonardo
  */
-public class AnimationPlayer extends Animation {
+public class AnimationEntity extends Animation {
 
     private int[] frameIndexes;
 
-    public AnimationPlayer(int animationSpeed, BufferedImage[] frames) {
+    /**
+     * Initializes the base of the animation.
+     *
+     * @param animationSpeed The speed of the animation.
+     * @param frames The array of frame that'll create the animation.
+     */
+    public AnimationEntity(int animationSpeed, BufferedImage[] frames) {
         super(animationSpeed, frames);
     }
 
     /**
+     * Gets the current tile.
      *
-     * @param isMoving
-     * @return
+     * @param isMoving Verifies if the entity is moving.
+     * @return Returns the current frame.
      */
     @Override
     public BufferedImage getCurrentFrame(boolean isMoving) {
@@ -31,6 +39,9 @@ public class AnimationPlayer extends Animation {
         return frames[3];
     }
 
+    /**
+     * Updates the frame of the entity.
+     */
     @Override
     public void tick() {
         timer += System.currentTimeMillis() - lastTime;
@@ -51,6 +62,11 @@ public class AnimationPlayer extends Animation {
         }
     }
 
+    /**
+     * Sets the indexes of the animation.
+     *
+     * @param indexes The array of indexes.
+     */
     public void setIndexes(int[] indexes) {
         frameIndexes = indexes;
     }

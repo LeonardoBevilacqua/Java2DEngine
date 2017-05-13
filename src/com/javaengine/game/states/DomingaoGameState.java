@@ -47,7 +47,7 @@ public class DomingaoGameState extends State {
             );
             packet.writeData(handler.getSocketClient());
         }
-        if (!started) {
+        if (!started || minute <= 0 && second <= 0) {
             return;
         }
 
@@ -61,6 +61,11 @@ public class DomingaoGameState extends State {
             Text.drawString(g, "Aguarde os outros viados!", handler.getWidth() / 2, handler.getHeight() / 2, true, Color.red, Assets.font28);
             return;
         }
+        if (minute <= 0 && second <= 0) {
+            Text.drawString(g, "Fim de jogo!", handler.getWidth() / 2, handler.getHeight() / 2, true, Color.red, Assets.font28);
+            return;
+        }
+
         level.render(g);
         Text.drawString(g, minute + ":" + second, handler.getWidth() / 2, 20, true, Color.YELLOW, Assets.font28);
     }

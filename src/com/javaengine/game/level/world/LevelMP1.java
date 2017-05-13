@@ -12,7 +12,7 @@ import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.LevelMP;
 
 /**
- *
+ * 
  * @author leonardo
  */
 public class LevelMP1 extends LevelMP {

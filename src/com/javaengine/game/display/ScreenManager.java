@@ -11,6 +11,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Window;
 
 /**
+ * ScreenManager is responsible to set fullscreen window with the appropriate
+ * resolution.
  *
  * @author leonardo
  */

@@ -10,6 +10,8 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 /**
+ * The UIObject is abstract and is the base of the other objects that will
+ * create the UI.
  *
  * @author leonardo
  */
@@ -19,6 +21,14 @@ public abstract class UIObject {
     protected Rectangle bounds;
     protected boolean hovering = false;
 
+    /**
+     * Set the base of the UI object.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @param width The width of the object.
+     * @param height The Height of the object.
+     */
     public UIObject(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -33,14 +43,16 @@ public abstract class UIObject {
 
     public abstract void onClick();
 
+    /**
+     * Check with the mouse is on the object.
+     *
+     * @param e The mouse event.
+     */
     public void onMouseMove(MouseEvent e) {
-        if (bounds.contains(e.getX(), e.getY())) {
-            hovering = true;
-        } else {
-            hovering = false;
-        }
+        hovering = bounds.contains(e.getX(), e.getY());
     }
 
+    
     public void onMouseRelease(MouseEvent e) {
         if (hovering) {
             onClick();

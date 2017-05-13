@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * The Assets class loads all the resources.
+ *
  * @author leonardo
  */
 public class Assets {
@@ -15,9 +16,9 @@ public class Assets {
     // fonts
     public static Font font28;
     public static Font font16;
-    
+
     // tiles
-    public static BufferedImage stoneTile, grassTile, voidTile, lavaTile;
+    public static BufferedImage stoneTile, grassTile, voidTile, dirtTile;
     public static BufferedImage[] waterTile, waterWithPlayerTile;
 
     // entities
@@ -34,14 +35,15 @@ public class Assets {
     public static void init() {
         font28 = FontLoader.loadFont("/fonts/slkscr.ttf", 28);
         font16 = FontLoader.loadFont("/fonts/slkscr.ttf", 16);
-        
+
         SpriteSheet sheet = new SpriteSheet(ImageLoader.loadImage("/sprite_sheet.png"));
+        SpriteSheet tiles = new SpriteSheet(ImageLoader.loadImage("/Tiles_test.png"));
 
         // tiles
         voidTile = sheet.crop(0, 0, HEIGHT, HEIGHT);
-        stoneTile = sheet.crop(WIDTH, 0, HEIGHT, HEIGHT);
-        grassTile = sheet.crop(WIDTH * 2, 0, HEIGHT, HEIGHT);
-        lavaTile = sheet.crop(WIDTH * 3, 0, HEIGHT, HEIGHT);
+        stoneTile = tiles.crop(0, 0, HEIGHT * 2, HEIGHT * 2);
+        grassTile = tiles.crop(WIDTH * 2, 0, HEIGHT * 2, HEIGHT * 2);
+        dirtTile = tiles.crop(WIDTH * 4, 0, HEIGHT * 2, HEIGHT * 2);
 
         waterTile = new BufferedImage[4];
 
@@ -84,19 +86,17 @@ public class Assets {
         player[12] = sheet.crop(4 * WIDTH, 24 * HEIGHT, WIDTH * 2, HEIGHT * 2);
 
         player[13] = Utils.flipImageHorizontally(player[12]);
-        
+
         player[14] = sheet.crop(10 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        
+
         player[15] = sheet.crop(12 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
-        
+
         player[16] = sheet.crop(8 * WIDTH, 25 * HEIGHT, WIDTH * 2, HEIGHT * 2);
         player[17] = Utils.flipImageHorizontally(player[16]);
-        
-        
 
         // UI
         inventoryScreen = ImageLoader.loadImage("/inventoryScreen.png");
-        
+
         btn_start = new BufferedImage[2];
 
         btn_start[0] = sheet.crop(0 * WIDTH, 18 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
@@ -106,9 +106,9 @@ public class Assets {
 
         btn_mp[0] = sheet.crop(4 * WIDTH, 18 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
         btn_mp[1] = sheet.crop(4 * WIDTH, 20 * HEIGHT, 4 * WIDTH, 2 * HEIGHT);
-        
+
         lifeBar = new BufferedImage[3];
-        
+
         lifeBar[0] = sheet.crop(WIDTH * 4, HEIGHT * 4, WIDTH * 2, HEIGHT);
         lifeBar[1] = sheet.crop(WIDTH * 2, HEIGHT * 4, WIDTH * 2, HEIGHT);
         lifeBar[2] = sheet.crop(0, HEIGHT * 4, WIDTH * 2, HEIGHT);

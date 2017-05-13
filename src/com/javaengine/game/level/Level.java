@@ -12,13 +12,19 @@ import com.javaengine.game.utils.Utils;
 import java.awt.Color;
 import java.awt.Graphics;
 
+/**
+ * The Level class is the base of the World of the game.
+ *
+ * @author leonardo
+ */
 public abstract class Level {
 
     protected final Handler handler;
     protected String path, msg;
     protected int width, height;
     protected int spawnX, spawnY;
-    // camera position
+
+// camera position
     private int xStart, yStart, xEnd, yEnd;
     private int[][] tiles;
     protected Player player;
@@ -29,6 +35,13 @@ public abstract class Level {
     // Item
     protected ItemManager itemManager;
 
+    /**
+     * Initializes the base of the world.
+     *
+     * @param handler The handler of the game.
+     * @param path The path of the map.
+     * @param player The main player object.
+     */
     public Level(Handler handler, String path, Player player) {
         this.handler = handler;
         this.path = path;
@@ -36,17 +49,22 @@ public abstract class Level {
         init();
     }
 
+    /**
+     * Initialize the variables.
+     */
     protected final void init() {
         entityManager = new EntityManager(handler, player);
-        
+
         itemManager = new ItemManager(handler);
 
         loadLevelFromFile(path);
 
-        //entityManager.getPlayer().setX(spawnX);
-        //entityManager.getPlayer().setY(spawnY);
+        entityManager.getPlayer().setPosition(spawnX, spawnY);
     }
 
+    /**
+     * Sets the position of the camera on the player.
+     */
     public void setCameraPosition() {
         xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
         xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
@@ -54,6 +72,9 @@ public abstract class Level {
         yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
     }
 
+    /**
+     * Update the world and everything on it.
+     */
     public void tick() {
         setCameraPosition();
         for (int y = yStart; y < yEnd; y++) {
@@ -65,13 +86,23 @@ public abstract class Level {
         itemManager.tick();
         entityManager.tick();
     }
-    
-    public void renderAlert(Graphics g){
-        if (msg != null &&System.currentTimeMillis() < timer) {
+
+    /**
+     * Renders a menssage.
+     *
+     * @param g The graphic object.
+     */
+    public void renderAlert(Graphics g) {
+        if (msg != null && System.currentTimeMillis() < timer) {
             Text.drawString(g, msg, 10, handler.getHeight() - 100, false, Color.BLACK, Assets.font16);
         }
     }
 
+    /**
+     * Renders the world and everything on it.
+     *
+     * @param g The graphics object.
+     */
     public void render(Graphics g) {
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
@@ -84,6 +115,13 @@ public abstract class Level {
         renderAlert(g);
     }
 
+    /**
+     * Gets a tile.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @return Returns the Tile.
+     */
     public synchronized Tile getTile(int x, int y) {
         if (x < 0 || y < 0 || x >= width || y >= height) {
             return Tile.VOID;
@@ -96,6 +134,11 @@ public abstract class Level {
         return t;
     }
 
+    /**
+     * Load the map from the file.
+     *
+     * @param path The path of map.
+     */
     private void loadLevelFromFile(String path) {
         String file = Utils.loadFileAsString(path);
         String[] tokens = file.split("\\s+");
@@ -114,21 +157,28 @@ public abstract class Level {
             }
         }
     }
-//
-//    public void saveLevelToFile() {
-//        try {
-//            ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void alterTile(int x, int y, Tile newTile) {
-//        this.tiles[x + y * width] = newTile.getId();
-//        image.setRGB(x, y, newTile.getLevelColour());
-//    }
-//
 
+    // TEMP
+    /**
+     * Save the map in a file.
+     */
+    public void saveLevelToFile() {
+
+    }
+
+    // TEMP
+    /**
+     * Alter the tile of the map.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @param newTile The new Tile.
+     */
+    public void alterTile(int x, int y, Tile newTile) {
+
+    }
+
+    // getters and setters
     public int getWidth() {
         return width;
     }
@@ -173,5 +223,4 @@ public abstract class Level {
         this.timer = timer;
     }
 
-    
 }

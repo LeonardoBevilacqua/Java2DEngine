@@ -28,11 +28,12 @@ public class Game implements Runnable {
 
 // STATIC VARIABLES
     public static final String NAME = "Game2dEngine";
-    public static final int GAME_WIDTH = 160, GAME_HEIGHT = GAME_WIDTH / 12 * 9;
+    public static final int GAME_WIDTH = 160,
+            GAME_HEIGHT = GAME_WIDTH / 12 * 9;
     public static final int SCALE = 3;
     public static final boolean DEBUG = true;
 
-// PRIVATE VARIBLES
+// VARIBLES
     private Thread thread;
     private boolean running = false;
     private int tickCount = 0;
@@ -72,40 +73,48 @@ public class Game implements Runnable {
     /**
      * Initializes all the components that were defined in the Game class.
      */
-    public void init() {
-        handler = new Handler(this);
+    private void init() {
+        try {
+            handler = new Handler(this);
 
-        width = GAME_WIDTH * SCALE;
-        height = GAME_HEIGHT * SCALE;
-        display = new Display(NAME, width, height);
-        frameLimiter = false;
-        debugMode = new DebugMode(handler);
+            width = GAME_WIDTH * SCALE;
+            height = GAME_HEIGHT * SCALE;
+            display = new Display(NAME, width, height);
+            frameLimiter = true;
+            debugMode = new DebugMode(handler);
 
-        // ADD THE CONTROLLERS OF THE GAME  
-        input = new InputHandler();
-        display.getCanvas().addKeyListener(input);
+            // ADD THE CONTROLLERS OF THE GAME  
+            input = new InputHandler();
+            display.getCanvas().addKeyListener(input);
 
-        mouseManager = new MouseManager();
-        display.getFrame().addMouseListener(mouseManager);
-        display.getFrame().addMouseMotionListener(mouseManager);
-        display.getCanvas().addMouseListener(mouseManager);
-        display.getCanvas().addMouseMotionListener(mouseManager);
+            mouseManager = new MouseManager();
+            display.getFrame().addMouseListener(mouseManager);
+            display.getFrame().addMouseMotionListener(mouseManager);
+            display.getCanvas().addMouseListener(mouseManager);
+            display.getCanvas().addMouseMotionListener(mouseManager);
 
-        window = new WindowHandler(handler);
-        display.getFrame().addWindowListener(window);
-        screen = new ScreenManager();
-        resolutions = new String[screen.getAllCompatibleDisplayModes().length];
-        for (int i = 0; i < resolutions.length; i++) {
-            resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "x"
-                    + screen.getAllCompatibleDisplayModes()[i].getHeight();
+            window = new WindowHandler(handler);
+            display.getFrame().addWindowListener(window);
+            screen = new ScreenManager();
+            //temp
+            resolutions = new String[screen.getAllCompatibleDisplayModes().length];
+            for (int i = 0; i < resolutions.length; i++) {
+                resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "x"
+                        + screen.getAllCompatibleDisplayModes()[i].getHeight();
+            }
+
+            Assets.init();
+            gameCamera = new GameCamera(handler, 0, 0);
+
+            menuState = new MenuState(handler);
+
+            State.setState(menuState);
+
+        } catch (Exception e) {
+            debugMode.debug(DebugMode.DebugLevel.SEVERE, e.getMessage());
+            System.exit(1);
+
         }
-
-        Assets.init();
-        gameCamera = new GameCamera(handler, 0, 0);
-
-        menuState = new MenuState(handler);
-
-        State.setState(menuState);
     }
 
     /**
@@ -118,6 +127,8 @@ public class Game implements Runnable {
         running = true;
         thread = new Thread(this, NAME + "_main");
         thread.start();
+
+        System.out.println("The thread has started . . .");
     }
 
     /**
@@ -131,7 +142,9 @@ public class Game implements Runnable {
 
         try {
             thread.join();
+            System.out.println("The thread has stopped . . .");
         } catch (InterruptedException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -165,7 +178,7 @@ public class Game implements Runnable {
             try { // avoid system overload
                 Thread.sleep(2);
             } catch (InterruptedException ex) {
-                JOptionPane.showMessageDialog(display.getFrame(),
+                JOptionPane.showMessageDialog(null,
                         ex.getMessage(), "Erro na Thread", JOptionPane.ABORT);
                 ex.printStackTrace();
             }
@@ -205,8 +218,13 @@ public class Game implements Runnable {
         if (input.f11.isPressed()) {
             input.f11.setPressed(false);
             if (screen.getFullScreenWindow() == null) {
-                String resolution = (String) JOptionPane.showInputDialog(null, "Resolução", "Falso UI", JOptionPane.QUESTION_MESSAGE, null,
-                        resolutions, resolutions[0]);
+                String resolution = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Resolução",
+                        "Falso UI",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        resolutions, resolutions[0]
+                );
                 int index = 0;
 
                 for (int i = 0; i < resolutions.length; i++) {
@@ -216,8 +234,12 @@ public class Game implements Runnable {
                     }
                 }
 
-                screen.setFullScreen(display, screen.getAllCompatibleDisplayModes()[index]);
+                screen.setFullScreen(
+                        display,
+                        screen.getAllCompatibleDisplayModes()[index]
+                );
             } else {
+
                 screen.setWindowScreen();
             }
         }
@@ -256,7 +278,17 @@ public class Game implements Runnable {
             State.getCurrentState().render(g);
         }
 
-        Text.drawString(g, "FPS: " + lastFrame + " TICKS: " + lastTick, 0, 10, false, Color.GREEN, Assets.font16);
+        if (DEBUG) {
+            Text.drawString(
+                    g,
+                    "FPS: " + lastFrame + " TICKS: " + lastTick,
+                    0,
+                    10,
+                    false,
+                    Color.GREEN,
+                    Assets.font16
+            );
+        }
 
         // end draw
         g.dispose();

@@ -11,7 +11,6 @@ import com.javaengine.game.net.packets.Packet01Disconnect;
 import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
 import com.javaengine.game.net.packets.Packet04StartDomingo;
-import com.javaengine.game.states.DomingaoGameState;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -21,6 +20,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The GameServer is responsible to send the data of the to the clients.
+ *
+ * @author leonardo
+ */
 public class GameServer extends Thread {
 
     private DatagramSocket socket;
@@ -28,14 +32,16 @@ public class GameServer extends Thread {
     private List<PlayerMP> connectedPlayers;
 
     // Domingo temporario
-    private long minutes;
-    public long minute, second;
     public boolean started = false;
 
+    /**
+     * Initialize the server.
+     *
+     * @param handler The handler of the game.
+     */
     public GameServer(Handler handler) {
         this.handler = handler;
         connectedPlayers = new ArrayList<>();
-        minutes = System.currentTimeMillis() + 120000;
 
         try {
             this.socket = new DatagramSocket(1331);
@@ -44,11 +50,10 @@ public class GameServer extends Thread {
         }
     }
 
-    public void checkTimer() {
-        minute = (minutes - System.currentTimeMillis()) / 60000;
-        second = (minutes - System.currentTimeMillis()) / 1000 - minute * 60;
-    }
-
+    /**
+     * Runs the thread.
+     */
+    @Override
     public void run() {
         while (true) {
             byte[] data = new byte[1024];
@@ -64,11 +69,18 @@ public class GameServer extends Thread {
         }
     }
 
+    /**
+     * Gets the data and choose the right packet.
+     *
+     * @param data The array of byte with the data.
+     * @param address The Ip address.
+     * @param port The port.
+     */
     private void parsePacket(byte[] data, InetAddress address, int port) {
         String message = new String(data).trim();
         PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
 
-        Packet packet = null;
+        Packet packet;
 
         switch (type) {
             default:
@@ -80,7 +92,16 @@ public class GameServer extends Thread {
                 System.out.println("[" + address.getHostAddress() + ":" + port + "] "
                         + ((Packet00Login) packet).getUsername() + " has connected...");
 
-                PlayerMP player = new PlayerMP(handler, ((Packet00Login) packet).getUsername(), Assets.player, address, port, false, ((Packet00Login) packet).getUserId());
+                PlayerMP player = new PlayerMP(
+                        handler,
+                        ((Packet00Login) packet).getUsername(),
+                        Assets.player,
+                        address,
+                        port,
+                        false,
+                        ((Packet00Login) packet).getUserId()
+                );
+
                 player.setPosition(20, 20);
 
                 this.addConnection(player, ((Packet00Login) packet));
@@ -110,6 +131,12 @@ public class GameServer extends Thread {
 
     }
 
+    /**
+     * Adds the new client to the server.
+     *
+     * @param player The data of the player.
+     * @param packet The Login packet.
+     */
     public void addConnection(PlayerMP player, Packet00Login packet) {
         boolean alreadyConnected = false;
 
@@ -134,6 +161,11 @@ public class GameServer extends Thread {
         }
     }
 
+    /**
+     * Remove the client from the server.
+     *
+     * @param packet The disconnection packet.
+     */
     public void removeConnection(Packet01Disconnect packet) {
         this.connectedPlayers.remove(getPlayeMPIndex(packet.getUserId()));
 
@@ -149,6 +181,12 @@ public class GameServer extends Thread {
         return null;
     }
 
+    /**
+     * Gets a client id.
+     *
+     * @param userId The id of the client.
+     * @return Returns the client id.
+     */
     public int getPlayeMPIndex(String userId) {
         int index = 0;
         for (PlayerMP player : connectedPlayers) {
@@ -160,6 +198,13 @@ public class GameServer extends Thread {
         return index;
     }
 
+    /**
+     * Send the data.
+     *
+     * @param data The array of byte with the data.
+     * @param ipAddress The Ip address.
+     * @param port The port.
+     */
     public void sendData(byte[] data, InetAddress ipAddress, int port) {
 
         DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
@@ -172,12 +217,22 @@ public class GameServer extends Thread {
 
     }
 
+    /**
+     * Send the data to all connected clients.
+     *
+     * @param data The array of byte with the data.
+     */
     public void sendDataToAllClients(byte[] data) {
         for (PlayerMP p : connectedPlayers) {
             sendData(data, p.ipAddress, p.port);
         }
     }
 
+    /**
+     * Handles the moviment of the entities on the server side.
+     *
+     * @param packet The move packet.
+     */
     private void handleMove(Packet02Move packet) {
         if (getPlayeMP(packet.getUserId()) != null) {
             int index = getPlayeMPIndex(packet.getUserId());
@@ -193,6 +248,11 @@ public class GameServer extends Thread {
         }
     }
 
+    /**
+     * Handles the update of the entities on the server side.
+     *
+     * @param packet The update packet.
+     */
     private void handleUpdate(Packet03LevelUpdate packet) {
         Iterator<Entity> it = this.handler.getLevel().getEntityManager().getEntities().iterator();
         while (it.hasNext()) {
@@ -207,18 +267,14 @@ public class GameServer extends Thread {
     }
 
     private void handleStart(Packet04StartDomingo packet) {
-        DomingaoGameState s = (DomingaoGameState) com.javaengine.game.states.State.getCurrentState();
-        s.jogadores = connectedPlayers.size();
-        if (s.jogadores >= 2) {
-            if (!s.started) {
-                minutes = System.currentTimeMillis() + 120000;
-                s.started = true;
+        packet.setJogadores(connectedPlayers.size());
+        if (packet.getJogadores() >= 2) {
+            if (!packet.isStart()) {
+                packet.setMinutes(System.currentTimeMillis() + 120000);
+                packet.setStart(true);
             }
 
-            checkTimer();
-            s.minute = minute;
-            s.second = second;
-
+            packet.checkTimer();
         }
         packet.writeData(this);
     }

@@ -14,6 +14,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 /**
+ * The Invetory class is responsible to manage the entity items.
  *
  * @author leonardo
  */
@@ -35,19 +36,23 @@ public class Inventory {
 
     private int selectedItem = 0;
 
+    /**
+     * Initialize the inventory.
+     *
+     * @param handler The handler of the game.
+     */
     public Inventory(Handler handler) {
         this.handler = handler;
         active = false;
         inventoryItems = new ArrayList<>();
     }
 
+    /**
+     * updates the inventory.
+     */
     public void tick() {
 
-        if (handler.getInput().inventory.wasJustPressed()) {
-            active = true;
-        } else {
-            active = false;
-        }
+        active = handler.getInput().inventory.wasJustPressed();
         if (!active) {
             return;
         }
@@ -68,6 +73,11 @@ public class Inventory {
         }
     }
 
+    /**
+     * Renders the inventory.
+     *
+     * @param g The graphic object.
+     */
     public void render(Graphics g) {
         if (!active) {
             return;
@@ -89,20 +99,25 @@ public class Inventory {
                 Text.drawString(g, "> " + inventoryItems.get(selectedItem + i).getName() + " <", invListCenterX,
                         invListCenterY + i * invListSpacing, true, Color.YELLOW, Assets.font28);
 
-            }else{
-                Text.drawString(g, inventoryItems.get(selectedItem + i).getName() , invListCenterX,
+            } else {
+                Text.drawString(g, inventoryItems.get(selectedItem + i).getName(), invListCenterX,
                         invListCenterY + i * invListSpacing, true, Color.WHITE, Assets.font28);
             }
 
         }
-        
+
         Item item = inventoryItems.get(selectedItem);
-        g.drawImage(item.getTexture(), invImageX, invImageY,invImageWidth,invImageHeight, null);
+        g.drawImage(item.getTexture(), invImageX, invImageY, invImageWidth, invImageHeight, null);
         Text.drawString(g, Integer.toString(item.getCount()), invCountX, invCountY, true, Color.WHITE, Assets.font28);
 
     }
 
     // Inventory methods
+    /**
+     * Adds a item in the inventory.
+     *
+     * @param item The inventory object.
+     */
     public void addItem(Item item) {
         for (Item i : inventoryItems) {
             if (i.getId() == item.getId()) {

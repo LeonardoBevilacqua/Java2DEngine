@@ -15,7 +15,16 @@ public class UIRectangleButton extends UIObject {
     private ClickListener clicker;
     private String text;
 
-    public UIRectangleButton(int x, int y, int width, int height, Color[] colours, String text, ClickListener clicker) {
+    public UIRectangleButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            Color[] colours,
+            String text,
+            ClickListener clicker
+    ) {
+
         super(x, y, width, height);
         this.clicker = clicker;
         this.colours = colours;
@@ -32,11 +41,26 @@ public class UIRectangleButton extends UIObject {
         if (!hovering) {
             g.setColor(colours[0]);
             g.fillRect(x, y, width, height);
-            Text.drawString(g, text, x + width / 2, y + height / 2, true, Color.red, Assets.font28);
+            Text.drawString(
+                    g,
+                    text, x + width / 2,
+                    y + height / 2,
+                    true,
+                    Color.red,
+                    Assets.font28
+            );
         } else {
             g.setColor(colours[1]);
             g.fillRect(x, y, width, height);
-            Text.drawString(g, text, x + width / 2, y + height / 2, true, Color.red, Assets.font28);
+            Text.drawString(
+                    g,
+                    text,
+                    x + width / 2,
+                    y + height / 2,
+                    true,
+                    Color.red,
+                    Assets.font28
+            );
         }
     }
 

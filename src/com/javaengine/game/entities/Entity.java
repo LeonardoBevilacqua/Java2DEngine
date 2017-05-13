@@ -1,11 +1,18 @@
 package com.javaengine.game.entities;
 
 import com.javaengine.game.entities.creatures.Player;
+import com.javaengine.game.entities.creatures.PlayerMP;
 import com.javaengine.game.handlers.Handler;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+/**
+ * The Entity is the responsible to give the default action of the others
+ * classes extended of entity.
+ *
+ * @author leonardo
+ */
 public abstract class Entity {
 
     public static final int DEFAULT_HEALTH = 10;
@@ -18,12 +25,28 @@ public abstract class Entity {
     protected boolean active, damage, isAttacking; // alive
     protected Rectangle bounds;
 
+    /**
+     * The constructor is responsible to initialize the default components of
+     * the entity.
+     *
+     * @param handler The handler to have access to all others components.
+     * @param width The width of the entity.
+     * @param height The height of the entity.
+     */
     public Entity(Handler handler, int width, int height) {
         this.handler = handler;
-        this.x = 20;
-        this.y = 20;
         this.width = width;
         this.height = height;
+
+        init();
+    }
+
+    /**
+     * Initialize the components outside the constructor.
+     */
+    private void init() {
+        this.x = 20;
+        this.y = 20;
         this.health = maxHealth = DEFAULT_HEALTH;
         this.active = true;
         this.damage = isAttacking = false;
@@ -40,6 +63,11 @@ public abstract class Entity {
 
     public abstract void die();
 
+    /**
+     * The method is responsible to make damage in the entity.
+     *
+     * @param damageAmt The amount of damage that the entity will take.
+     */
     public void hurt(float damageAmt) {
         damage = true;
         health -= damageAmt;
@@ -49,11 +77,22 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Sets the position of the entity on the screen.
+     *
+     * @param x The horizontal position.
+     * @param y The vertical position.
+     */
     public final void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Renders the life bar of the main entity and others entities.
+     *
+     * @param g The object of the graphics.
+     */
     public void renderLifeBar(Graphics g) {
         float healthPercentage = this.health / this.maxHealth;
 
@@ -84,9 +123,16 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Checks the collision with others entities.
+     *
+     * @param xOffset The horizontal offset.
+     * @param yOffset The vertical offset.
+     * @return Returns true if has collision with another entity.
+     */
     public boolean checkEntityColision(int xOffset, int yOffset) {
         for (Entity e : handler.getLevel().getEntityManager().getEntities()) {
-            if (e.equals(this)) {
+            if (e.equals(this) || e instanceof PlayerMP) {
                 continue;
             }
             if (e.getCollisionBounds(0, 0).intersects(getCollisionBounds(xOffset, yOffset))) {

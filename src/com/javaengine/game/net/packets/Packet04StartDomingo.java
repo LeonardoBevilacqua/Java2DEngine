@@ -7,6 +7,7 @@ public class Packet04StartDomingo extends Packet {
 
     private boolean start;
     private long minute, second;
+    private static long totalMinutes;
     private int jogadores = 0;
 
     public Packet04StartDomingo(byte[] data) {
@@ -45,6 +46,11 @@ public class Packet04StartDomingo extends Packet {
                 + "," + this.second).getBytes();
     }
 
+    public void checkTimer() {
+        minute = (totalMinutes - System.currentTimeMillis()) / 60000;
+        second = (totalMinutes - System.currentTimeMillis()) / 1000 - minute * 60;
+    }
+
     public boolean isStart() {
         return start;
     }
@@ -59,6 +65,22 @@ public class Packet04StartDomingo extends Packet {
 
     public long getSecond() {
         return second;
+    }
+
+    public long getMinutes() {
+        return totalMinutes;
+    }
+
+    public void setMinutes(long minutes) {
+        this.totalMinutes = minutes;
+    }
+
+    public void setJogadores(int jogadores) {
+        this.jogadores = jogadores;
+    }
+
+    public void setStart(boolean start) {
+        this.start = start;
     }
 
 }

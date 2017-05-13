@@ -4,12 +4,20 @@ import com.javaengine.game.entities.Entity;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.level.tiles.Tile;
 
+/**
+ * Create the base of the creatures
+ *
+ * @author leonardo
+ */
 public abstract class Creature extends Entity {
 
     public static final int DEFAULT_SPEED = 2,
             DEFAULT_CRETURE_WIDTH = 64,
             DEFAULT_CRETURE_HEIGHT = 64;
-    protected final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+    protected final int UP = 0,
+            DOWN = 1,
+            LEFT = 2,
+            RIGHT = 3;
     protected String name;
     protected int xMove;
     protected int yMove;
@@ -19,6 +27,14 @@ public abstract class Creature extends Entity {
     protected int movingDir = 1;
     protected int scale = 1;
 
+    /**
+     * Initialize the base of the creature.
+     *
+     * @param handler The handler of the game.
+     * @param name The name of the creature.
+     * @param width The width.
+     * @param height The height.
+     */
     public Creature(Handler handler, String name, int width, int height) {
         super(handler, width, height);
         this.name = name;
@@ -27,6 +43,9 @@ public abstract class Creature extends Entity {
         yMove = 0;
     }
 
+    /**
+     * Move the creature in the x and y coordinates.
+     */
     public void move() {
         if (xMove != 0 || yMove != 0) {
             if (!checkEntityColision(xMove, 0)) {
@@ -41,6 +60,9 @@ public abstract class Creature extends Entity {
         numSteps++;
     }
 
+    /**
+     * Move the creature in the x coordinate.
+     */
     public void moveX() {
         if (xMove > 0) {//Moving right
             int tx = (int) (x + xMove + bounds.x + bounds.width) / Tile.TILE_WIDTH;
@@ -68,6 +90,9 @@ public abstract class Creature extends Entity {
 
     }
 
+    /**
+     * Move the creature in the y coordinate.
+     */
     public void moveY() {
         if (yMove < 0) {//Up
             int ty = (int) (y + yMove + bounds.y) / Tile.TILE_HEIGHT;
@@ -95,6 +120,13 @@ public abstract class Creature extends Entity {
 
     }
 
+    /**
+     * Checks colision with the tile.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @return Returns if has collision.
+     */
     protected boolean collisionWithTile(int x, int y) {
         return handler.getLevel().getTile(x, y).isSolid();
     }

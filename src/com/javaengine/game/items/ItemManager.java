@@ -11,43 +11,61 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
+ * The ItemManager is responsible to control the items.
  *
  * @author leonardo
  */
 public class ItemManager {
-    
+
     private Handler handler;
     private ArrayList<Item> items;
-    
-    public ItemManager(Handler handler){
+
+    /**
+     * Initializes the manager.
+     *
+     * @param handler The handler of the game.
+     */
+    public ItemManager(Handler handler) {
         this.handler = handler;
         items = new ArrayList<>();
     }
-    
-    public void tick(){
+
+    /**
+     * Updates the items.
+     */
+    public void tick() {
         Iterator<Item> it = items.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Item i = it.next();
             i.tick();
-            if(i.isPickUp()){
+            if (i.isPickUp()) {
                 it.remove();
             }
         }
     }
-    
-    public void render(Graphics g){
+
+    /**
+     * Renders the item.
+     *
+     * @param g The graphic object.
+     */
+    public void render(Graphics g) {
         for (Item i : items) {
             i.render(g);
         }
     }
-    
-    public void addItem(Item i){
+
+    /**
+     * Adds a new item in the manager.
+     *
+     * @param i The item object.
+     */
+    public void addItem(Item i) {
         i.setHandler(handler);
         items.add(i);
     }
-    
-    // getters and setters
 
+    // getters and setters
     public Handler getHandler() {
         return handler;
     }
@@ -55,6 +73,5 @@ public class ItemManager {
     public void setHandler(Handler handler) {
         this.handler = handler;
     }
-    
-        
+
 }

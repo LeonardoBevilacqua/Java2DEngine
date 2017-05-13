@@ -8,6 +8,11 @@ import com.javaengine.game.net.GameServer;
 import com.javaengine.game.net.packets.Packet00Login;
 import javax.swing.JOptionPane;
 
+/**
+ * Create a world with multiplayer;
+ *
+ * @author leonardo
+ */
 public abstract class LevelMP extends Level {
 
     // MP
@@ -15,11 +20,21 @@ public abstract class LevelMP extends Level {
     private GameServer socketServer;
     private String ipAdress = "localhost";
 
+    /**
+     * Initializes the base of the world and start the multiplayer.
+     *
+     * @param handler The handler of the game.
+     * @param path The path of the world.
+     * @param player The main player.
+     */
     public LevelMP(Handler handler, String path, Player player) {
         super(handler, path, player);
         initServer();
     }
 
+    /**
+     * Initializes the multiplayer.
+     */
     protected void initServer() {
         // temporary
         if (JOptionPane.showConfirmDialog(handler.getGame().getDisplay().getFrame(), "Do you want to run the server?") == 0) {

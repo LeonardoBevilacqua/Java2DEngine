@@ -11,7 +11,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 /**
- *
+ * 
  * @author leonardo
  */
 public class Text {
