@@ -52,8 +52,21 @@ public class ScreenManager {
      * @param displaymode The resolution.
      */
     public void setFullScreen(Display display, DisplayMode displaymode) {
-        videoCard.setFullScreenWindow(display.getFrame());
-        videoCard.setDisplayMode(displaymode);
+        if (videoCard.isFullScreenSupported()) {
+            videoCard.setFullScreenWindow(display.getFrame());
+            videoCard.setDisplayMode(displaymode);
+        }
+    }
+
+    /**
+     * Set a new resolution.
+     *
+     * @param displayMode The resolution.
+     */
+    public void setResolution(DisplayMode displayMode) {
+        if (videoCard.isFullScreenSupported()) {
+            videoCard.setDisplayMode(displayMode);
+        }
     }
 
     /**

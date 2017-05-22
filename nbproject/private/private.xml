@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/level/tiles/BasicSolidTile.java</file>
-            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/level/tiles/AnimatedTile.java</file>
-            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/level/tiles/BasicTile.java</file>
+            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/Game.java</file>
+            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/gfx/Assets.java</file>
+            <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/res/Tiles_test.png</file>
             <file>file:/home/leonardo/Documentos/Projects/Java/Games/Java2DEngine/Java2DEngine/src/com/javaengine/game/level/tiles/Tile.java</file>
         </group>
     </open-files>

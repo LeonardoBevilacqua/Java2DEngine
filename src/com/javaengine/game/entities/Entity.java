@@ -2,8 +2,8 @@ package com.javaengine.game.entities;
 
 import com.javaengine.game.entities.creatures.Player;
 import com.javaengine.game.entities.creatures.PlayerMP;
+import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.handlers.Handler;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
@@ -97,29 +97,17 @@ public abstract class Entity {
         float healthPercentage = this.health / this.maxHealth;
 
         if (this instanceof Player && handler.getLevel().getEntityManager().getPlayer().equals(this)) {
-            g.setColor(Color.gray);
-            g.fillRect(20, 20, (int) this.maxHealth * 20, 12);
-
-            g.setColor(Color.red);
-            g.fillRect(20, 20, (int) (this.health * 20), 12);
-
-            g.setColor(Color.black);
-            g.drawRect(20, 20, (int) this.maxHealth * 20, 12);
+            
+            g.drawImage(Assets.lifeBar[2], 20, 20, 96, 32, null);
+            g.drawImage(Assets.lifeBar[1], 20, 20, (int) healthPercentage * 96, 32, null);
+            g.drawImage(Assets.lifeBar[0], 20, 20, 96, 32, null);
         }
 
         if (damage && !this.equals(handler.getLevel().getEntityManager().getPlayer())) {
-
-            g.setColor(Color.gray);
-            g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
-                    width, 8);
-
-            g.setColor(Color.red);
-            g.fillRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
-                    (int) (width * healthPercentage), 8);
-
-            g.setColor(Color.black);
-            g.drawRect(x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8,
-                    width, 8);
+            
+            g.drawImage(Assets.lifeBar[2], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, 96, 32, null);
+            g.drawImage(Assets.lifeBar[1], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, (int) (healthPercentage * 96), 32, null);
+            g.drawImage(Assets.lifeBar[0], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, 96, 32, null);
         }
     }
 

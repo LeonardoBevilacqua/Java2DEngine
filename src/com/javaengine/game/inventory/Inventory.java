@@ -52,17 +52,17 @@ public class Inventory {
      */
     public void tick() {
 
-        active = handler.getInput().inventory.wasJustPressed();
+        if (handler.getInput().keyJustPressed(handler.getInput().inventory)) {
+            active = !active;
+        }
         if (!active) {
             return;
         }
 
-        if (handler.getInput().inventoryUp.isPressed()) {
-            handler.getInput().inventoryUp.toggle(false);
+        if (handler.getInput().keyJustPressed(handler.getInput().Iup)) {
             selectedItem--;
         }
-        if (handler.getInput().inventoryDown.isPressed()) {
-            handler.getInput().inventoryDown.toggle(false);
+        if (handler.getInput().keyJustPressed(handler.getInput().Idown)) {
             selectedItem++;
         }
 

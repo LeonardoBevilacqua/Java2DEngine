@@ -30,7 +30,9 @@ public class UIManager {
      */
     public void tick() {
         for (UIObject o : objects) {
-            o.tick();
+            if (o.isActive()) {
+                o.tick();
+            }
         }
     }
 
@@ -41,7 +43,9 @@ public class UIManager {
      */
     public void render(Graphics g) {
         for (UIObject o : objects) {
-            o.render(g);
+            if (o.isActive()) {
+                o.render(g);
+            }
         }
     }
 

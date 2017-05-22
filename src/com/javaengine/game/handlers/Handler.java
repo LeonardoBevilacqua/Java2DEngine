@@ -1,8 +1,8 @@
 package com.javaengine.game.handlers;
 
-import com.javaengine.game.handlers.input.InputHandler;
 import com.javaengine.game.Game;
 import com.javaengine.game.gfx.GameCamera;
+import com.javaengine.game.handlers.input.KeyManager;
 import com.javaengine.game.handlers.input.MouseManager;
 import com.javaengine.game.level.Level;
 import com.javaengine.game.net.GameClient;
@@ -52,8 +52,8 @@ public class Handler {
      * 
      * @return Returns the object of the keyboard input.
      */
-    public InputHandler getInput() {
-        return game.getInput();
+    public KeyManager getInput() {
+        return game.getKeyManager();
     }
 
     /**

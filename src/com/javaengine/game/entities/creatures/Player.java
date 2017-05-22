@@ -47,13 +47,13 @@ public class Player extends Creature {
      * @param texture The texture.
      */
     public Player(Handler handler, String username, BufferedImage[] texture) {
-        super(handler, username, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT);
+        super(handler, username, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT * 2);
         this.USERNAME = username;
         this.texture = texture;
 
-        bounds.x = 8 * 2;
-        bounds.y = 20 * 2;
-        bounds.width = 15 * 2;
+        bounds.x = 16;
+        bounds.y = 32 * 2;
+        bounds.width = 32;
         bounds.height = 8 * 2;
 
         // animation
@@ -61,10 +61,10 @@ public class Player extends Creature {
 
         inventory = new Inventory(handler);
 
-        DIRECTIONS[UP] = new int[]{0, 1};
-        DIRECTIONS[DOWN] = new int[]{2, 3};
-        DIRECTIONS[LEFT] = new int[]{4, 5};
-        DIRECTIONS[RIGHT] = new int[]{6, 7};
+        DIRECTIONS[UP] = new int[]{0, 1, 2, 3};
+        DIRECTIONS[DOWN] = new int[]{4, 5, 6, 7};
+        DIRECTIONS[LEFT] = new int[]{8, 9, 10, 11};
+        DIRECTIONS[RIGHT] = new int[]{12, 13, 14, 15};
         // swiming
         DIRECTIONS[UP + 4] = new int[]{8, 9};
         DIRECTIONS[DOWN + 4] = new int[]{10, 11};
@@ -88,23 +88,19 @@ public class Player extends Creature {
         yMove = 0;
         isMoving = false;
 
-        if (handler.getInput().up.isPressed()) {
+        if (handler.getInput().up) {
             yMove += -speed;
         }
-        if (handler.getInput().down.isPressed()) {
+        if (handler.getInput().down) {
             yMove += speed;
         }
-        if (handler.getInput().left.isPressed()) {
+        if (handler.getInput().left) {
             xMove += -speed;
         }
-        if (handler.getInput().right.isPressed()) {
+        if (handler.getInput().right) {
             xMove += speed;
         }
-        if (handler.getInput().meleeAtack.isPressed()) {
-            isAttacking = true;
-        } else {
-            isAttacking = false;
-        }
+        isAttacking = handler.getInput().meleeAtack;
 
     }
 
@@ -174,7 +170,7 @@ public class Player extends Creature {
         int attackRectangleSize = 20;
         attackRectangle.width = attackRectangle.height = attackRectangleSize;
 
-        if (handler.getInput().meleeAtack.isPressed()) {
+        if (handler.getInput().meleeAtack) {
 
             switch (movingDir) {
                 case UP:
@@ -282,6 +278,7 @@ public class Player extends Creature {
             Text.drawString(g, USERNAME, x - handler.getGameCamera().getxOffset() + width / 2,
                     y - handler.getGameCamera().getyOffset() - 16, true, Color.WHITE, Assets.font16);
         }
+        //check colision box - g.fillRect(x + bounds.x - handler.getGameCamera().getxOffset(), y + bounds.y - handler.getGameCamera().gety  Offset(), bounds.width, bounds.height);
     }
 
     /**

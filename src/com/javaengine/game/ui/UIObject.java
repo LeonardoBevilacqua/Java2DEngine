@@ -17,9 +17,10 @@ import java.awt.event.MouseEvent;
  */
 public abstract class UIObject {
 
-    protected int x, y, width, height;
+    protected int width, height;
+    protected float x, y;
     protected Rectangle bounds;
-    protected boolean hovering = false;
+    protected boolean hovering, active;
 
     /**
      * Set the base of the UI object.
@@ -29,12 +30,14 @@ public abstract class UIObject {
      * @param width The width of the object.
      * @param height The Height of the object.
      */
-    public UIObject(int x, int y, int width, int height) {
+    public UIObject(float x, float y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        bounds = new Rectangle(x, y, width, height);
+        bounds = new Rectangle((int) x, (int) y, width, height);
+        hovering = false;
+        active = true;
     }
 
     public abstract void tick();
@@ -52,7 +55,6 @@ public abstract class UIObject {
         hovering = bounds.contains(e.getX(), e.getY());
     }
 
-    
     public void onMouseRelease(MouseEvent e) {
         if (hovering) {
             onClick();
@@ -60,19 +62,19 @@ public abstract class UIObject {
     }
 
     // getters and setters
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
@@ -99,5 +101,15 @@ public abstract class UIObject {
     public void setHovering(boolean hovering) {
         this.hovering = hovering;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    
 
 }

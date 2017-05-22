@@ -67,9 +67,9 @@ public abstract class Level {
      */
     public void setCameraPosition() {
         xStart = Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
-        xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth() * Game.SCALE) / Tile.TILE_WIDTH + 1);
+        xEnd = Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth()) / Tile.TILE_WIDTH + 1);
         yStart = Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
-        yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight() * Game.SCALE) / Tile.TILE_HEIGHT + 1);
+        yEnd = Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight()) / Tile.TILE_HEIGHT + 1);
     }
 
     /**

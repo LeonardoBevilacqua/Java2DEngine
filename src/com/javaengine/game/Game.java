@@ -7,8 +7,10 @@ import com.javaengine.game.gfx.GameCamera;
 import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.handlers.WindowHandler;
-import com.javaengine.game.handlers.input.InputHandler;
+import com.javaengine.game.handlers.input.KeyManager;
 import com.javaengine.game.handlers.input.MouseManager;
+import com.javaengine.game.menus.MainMenu;
+import com.javaengine.game.menus.Menu;
 import com.javaengine.game.states.MenuState;
 import com.javaengine.game.states.State;
 import com.javaengine.game.utils.DebugMode;
@@ -28,9 +30,8 @@ public class Game implements Runnable {
 
 // STATIC VARIABLES
     public static final String NAME = "Game2dEngine";
-    public static final int GAME_WIDTH = 160,
-            GAME_HEIGHT = GAME_WIDTH / 12 * 9;
-    public static final int SCALE = 3;
+    public static final int GAME_WIDTH = 1024,
+            GAME_HEIGHT = GAME_WIDTH / 16 * 9;
     public static final boolean DEBUG = true;
 
 // VARIBLES
@@ -44,8 +45,6 @@ public class Game implements Runnable {
 
     // Window
     private Display display;
-    private ScreenManager screen;
-    private String[] resolutions;
 
     // graphics
     private BufferStrategy bs;
@@ -55,7 +54,7 @@ public class Game implements Runnable {
     private State menuState;
 
     // input
-    private InputHandler input;
+    private KeyManager keyManager;
     private MouseManager mouseManager;
 
     // window
@@ -77,15 +76,15 @@ public class Game implements Runnable {
         try {
             handler = new Handler(this);
 
-            width = GAME_WIDTH * SCALE;
-            height = GAME_HEIGHT * SCALE;
+            width = GAME_WIDTH;
+            height = GAME_HEIGHT;
             display = new Display(NAME, width, height);
             frameLimiter = true;
             debugMode = new DebugMode(handler);
 
             // ADD THE CONTROLLERS OF THE GAME  
-            input = new InputHandler();
-            display.getCanvas().addKeyListener(input);
+            keyManager = new KeyManager();
+            display.getCanvas().addKeyListener(keyManager);
 
             mouseManager = new MouseManager();
             display.getFrame().addMouseListener(mouseManager);
@@ -95,16 +94,12 @@ public class Game implements Runnable {
 
             window = new WindowHandler(handler);
             display.getFrame().addWindowListener(window);
-            screen = new ScreenManager();
-            //temp
-            resolutions = new String[screen.getAllCompatibleDisplayModes().length];
-            for (int i = 0; i < resolutions.length; i++) {
-                resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "x"
-                        + screen.getAllCompatibleDisplayModes()[i].getHeight();
-            }
 
             Assets.init();
             gameCamera = new GameCamera(handler, 0, 0);
+
+            Menu.addMenu(new MainMenu(handler,"MainMenu"));
+            Menu.setMenu("MainMenu");
 
             menuState = new MenuState(handler);
 
@@ -212,50 +207,15 @@ public class Game implements Runnable {
     }
 
     /**
-     * Checks if the window is fullscreen.
-     */
-    private void checkFullScreen() {
-        if (input.f11.isPressed()) {
-            input.f11.setPressed(false);
-            if (screen.getFullScreenWindow() == null) {
-                String resolution = (String) JOptionPane.showInputDialog(
-                        null,
-                        "Resolução",
-                        "Falso UI",
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        resolutions, resolutions[0]
-                );
-                int index = 0;
-
-                for (int i = 0; i < resolutions.length; i++) {
-                    if (resolutions[i].equals(resolution)) {
-                        index = i;
-                        break;
-                    }
-                }
-
-                screen.setFullScreen(
-                        display,
-                        screen.getAllCompatibleDisplayModes()[index]
-                );
-            } else {
-
-                screen.setWindowScreen();
-            }
-        }
-    }
-
-    /**
      * Updates all variables of the game.
      */
     public void tick() {
         tickCount++;
+        keyManager.tick();
 
         if (State.getCurrentState() != null) {
             State.getCurrentState().tick();
         }
-
-        checkFullScreen();
         checkWindow();
     }
 
@@ -306,14 +266,6 @@ public class Game implements Runnable {
 
     /**
      *
-     * @return Returns the object of the keyboard input.
-     */
-    public InputHandler getInput() {
-        return input;
-    }
-
-    /**
-     *
      * @return Returns the object of the mouse input.
      */
     public MouseManager getMouseManager() {
@@ -359,4 +311,13 @@ public class Game implements Runnable {
     public boolean isRunning() {
         return running;
     }
+
+    /**
+     *
+     * @return Returns the object of the keyboard input.
+     */
+    public KeyManager getKeyManager() {
+        return keyManager;
+    }
+
 }
