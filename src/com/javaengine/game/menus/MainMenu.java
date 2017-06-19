@@ -5,6 +5,7 @@
  */
 package com.javaengine.game.menus;
 
+import com.javaengine.game.menus.config.ConfigMenu;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
@@ -37,7 +38,7 @@ public class MainMenu extends Menu {
 
         uiManager = new UIManager(handler);
 
-        buttonsImg = new UIImageButton[3];
+        buttonsImg = new UIImageButton[4];
 
         buttonsImg[0] = new UIImageButton(
                 handler,
@@ -81,7 +82,17 @@ public class MainMenu extends Menu {
                     stopMouseListener();
                     Menu.addMenu(new ConfigMenu(handler, "ConfigMenu"));
                     Menu.setMenu("ConfigMenu");
-        });
+                });
+
+        buttonsImg[3] = new UIImageButton(
+                handler,
+                15,
+                70,
+                false,
+                64 * 2, 64,
+                Assets.btn_exit, () -> {
+                    handler.getGame().stop();
+                });
 
         startMouseListener();
 

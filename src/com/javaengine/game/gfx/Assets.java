@@ -27,7 +27,10 @@ public class Assets {
 
     // UI
     public static BufferedImage inventoryScreen;
-    public static BufferedImage[] btn_start, btn_mp, btn_config, lifeBar, checkBox, check;
+    public static BufferedImage[] btn_start, btn_mp, btn_config, btn_exit;
+
+    // HUD
+    public static BufferedImage[] lifeBar, checkBox, check;
 
     /**
      * Load the sprite sheet and initializes all the assets.
@@ -119,6 +122,10 @@ public class Assets {
         btn_config = new BufferedImage[2];
         btn_config[0] = ui.crop(32 * 3, 32 * 2, 64, 64);
         btn_config[1] = btn_config[0];
+
+        btn_exit = new BufferedImage[2];
+        btn_exit[0] = ui.crop(32 * 5, 32 * 2, 64 * 2, 64);
+        btn_exit[1] = btn_exit[0];
 
         lifeBar = new BufferedImage[3];
 

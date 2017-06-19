@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.javaengine.game.menus;
+package com.javaengine.game.menus.config;
 
-import com.javaengine.game.display.ScreenManager;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
-import com.javaengine.game.ui.ClickListener;
+import com.javaengine.game.menus.Menu;
 import com.javaengine.game.ui.UIImageButton;
 import com.javaengine.game.ui.UIManager;
+import static com.javaengine.game.utils.ResolutionsManager.currentGameResolutions;
+import static com.javaengine.game.utils.ResolutionsManager.gameResolutions;
+import static com.javaengine.game.utils.ResolutionsManager.updateResolution;
+import static com.javaengine.game.utils.ResolutionsManager.isFullscreen;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -23,19 +26,17 @@ import java.awt.event.KeyEvent;
 public class ConfigMenu extends Menu {
 
     private UIManager uiManager;
-    private boolean fullscreen;
-    private ScreenManager screen;
-    private String[] resolutions;
+    //private ScreenManager screen;
     private int selectedItem;
-    private int currentResolution;
+    private String selectResolution;
 
     public ConfigMenu(Handler handler, String id) {
         super(handler, id);
         uiManager = new UIManager(handler);
-        fullscreen = false;
 
         uiManager.addObject(new UIImageButton(handler, 50, 21, false, 32, 32, Assets.checkBox, () -> {
-            fullscreen = !fullscreen;
+            isFullscreen = !isFullscreen;
+            updateResolution("fullscreen", isFullscreen ? "1" : "0");
         }));
 
         uiManager.addObject(new UIImageButton(handler, 20, 80, false, 32, 32, Assets.btn_config, () -> {
@@ -44,19 +45,18 @@ public class ConfigMenu extends Menu {
 
         startMouseListener();
 
-        screen = new ScreenManager();
-
-        getResolutions();
+        // screen = new ScreenManager();
         selectedItem = 0;
-        currentResolution = resolutions.length - 1;
+
+        selectResolution = currentGameResolutions.split("@")[0] + "x" + currentGameResolutions.split("@")[1];
     }
 
     @Override
     public void tick() {
         uiManager.tick();
-        checkFullScreen();
+        GameFullscreen.checkFullScreen(handler.getGame().getDisplay());
 
-        if (fullscreen) {
+        if (isFullscreen) {
             if (handler.getInput().keyJustPressed(handler.getInput().Iup)) {
                 selectedItem--;
             }
@@ -65,13 +65,17 @@ public class ConfigMenu extends Menu {
             }
 
             if (selectedItem < 0) {
-                selectedItem = resolutions.length - 1;
-            } else if (selectedItem >= resolutions.length) {
+                selectedItem = gameResolutions.length - 1;
+            } else if (selectedItem >= gameResolutions.length) {
                 selectedItem = 0;
             }
+
+            selectResolution = gameResolutions[selectedItem].split("@")[0]
+                    + "x" + gameResolutions[selectedItem].split("@")[1];
+
             if (handler.getInput().keyJustPressed(KeyEvent.VK_ENTER)) {
-                currentResolution = selectedItem;
-                changeResolution();
+                currentGameResolutions = gameResolutions[selectedItem];
+                GameFullscreen.changeResolution();
             }
         }
     }
@@ -95,32 +99,20 @@ public class ConfigMenu extends Menu {
                 false, Color.WHITE, Assets.font28
         );
 
-        Text.drawString(g, "> " + resolutions[selectedItem] + " <", (int) (handler.getWidth() * 0.6),
+        Text.drawString(g, "> " + selectResolution + " <", (int) (handler.getWidth() * 0.6),
                 (int) (handler.getHeight() * 0.31), true, Color.YELLOW, Assets.font28);
 
         uiManager.render(g);
-        if (fullscreen) {
-            g.drawImage(Assets.check[0], (int) (handler.getWidth() * 0.50f), (int) (handler.getHeight() * 0.23), 32, 32, null);
-        }
-    }
-
-    /**
-     * Gets all possibles resolutions.
-     */
-    private void getResolutions() {
-        resolutions = new String[screen.getAllCompatibleDisplayModes().length];
-
-        for (int i = 0; i < resolutions.length; i++) {
-            resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "x"
-                    + screen.getAllCompatibleDisplayModes()[i].getHeight();
+        if (isFullscreen) {
+            g.drawImage(Assets.check[0], (int) (handler.getWidth() * 0.50f), (int) (handler.getHeight() * 0.21), 32, 32, null);
         }
     }
 
     /**
      * Checks if the window is fullscreen.
      */
-    private void checkFullScreen() {
-        if (fullscreen) {
+    /*private void checkFullScreen() {
+        if (isFullscreen) {
             if (screen.getFullScreenWindow() == null) {
                 setFullScreen();
             }
@@ -131,15 +123,21 @@ public class ConfigMenu extends Menu {
 
     private void setFullScreen() {
         screen.setFullScreen(
-                handler.getGame().getDisplay(),
-                screen.getAllCompatibleDisplayModes()[currentResolution]
-        );
+                handler.getGame().getDisplay(), getDisplayMode());
     }
 
     private void changeResolution() {
-        screen.setResolution(screen.getAllCompatibleDisplayModes()[currentResolution]);
+        updateResolution("currentresolution", currentGameResolutions);
+        screen.setResolution(getDisplayMode());
     }
 
+    private DisplayMode getDisplayMode() {
+        String[] components = currentGameResolutions.split("@");
+        return new DisplayMode(Integer.parseInt(components[0]),
+                Integer.parseInt(components[1]),
+                Integer.parseInt(components[2]),
+                Integer.parseInt(components[3]));
+    }*/
     @Override
     public void startMouseListener() {
         handler.getMouseManager().setUIManager(uiManager);

@@ -1,6 +1,5 @@
 package com.javaengine.game.display;
 
-import com.javaengine.game.handlers.WindowHandler;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;

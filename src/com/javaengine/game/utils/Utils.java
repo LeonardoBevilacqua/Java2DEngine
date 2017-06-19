@@ -3,8 +3,12 @@ package com.javaengine.game.utils;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.UUID;
 import javax.swing.JOptionPane;
 
@@ -13,7 +17,7 @@ import javax.swing.JOptionPane;
  *
  * @author leonardo
  */
-public class Utils {
+public abstract class Utils {
 
     /**
      * This method loads a file and returns the text.
@@ -44,6 +48,30 @@ public class Utils {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Write a file.
+     *
+     * @param text The text of the file.
+     * @param name The name of the file.
+     * @param type The extension of the file.
+     */
+    public static void writeStringAsFile(String text, String name, String type) {
+        try {
+            Writer writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(name + "." + type),
+                            "utf-8"
+                    )
+            );
+            writer.write(text);
+            writer.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        } 
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.javaengine.game;
 
 import com.javaengine.game.display.Display;
-import com.javaengine.game.display.ScreenManager;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.GameCamera;
 import com.javaengine.game.gfx.Text;
@@ -11,9 +10,12 @@ import com.javaengine.game.handlers.input.KeyManager;
 import com.javaengine.game.handlers.input.MouseManager;
 import com.javaengine.game.menus.MainMenu;
 import com.javaengine.game.menus.Menu;
+import com.javaengine.game.menus.config.GameFullscreen;
 import com.javaengine.game.states.MenuState;
 import com.javaengine.game.states.State;
 import com.javaengine.game.utils.DebugMode;
+import com.javaengine.game.utils.ResolutionsManager;
+import static com.javaengine.game.utils.ResolutionsManager.loadResolution;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -94,6 +96,9 @@ public class Game implements Runnable {
 
             window = new WindowHandler(handler);
             display.getFrame().addWindowListener(window);
+            
+            ResolutionsManager.loadResolution();
+            GameFullscreen.checkFullScreen(display);
 
             Assets.init();
             gameCamera = new GameCamera(handler, 0, 0);
@@ -137,10 +142,12 @@ public class Game implements Runnable {
 
         try {
             thread.join();
+            System.exit(0);
             System.out.println("The thread has stopped . . .");
         } catch (InterruptedException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             ex.printStackTrace();
+            System.exit(1);
         }
     }
 
