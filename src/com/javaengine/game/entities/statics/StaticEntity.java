@@ -27,7 +27,7 @@ public abstract class StaticEntity extends Entity {
      */
     public StaticEntity(Handler handler, int x, int y, int width, int height, String uniqueId) {
         super(handler, width, height);
-        this.uniqueId = uniqueId;
+        this.id = uniqueId;
         this.setPosition(x, y);
     }
 

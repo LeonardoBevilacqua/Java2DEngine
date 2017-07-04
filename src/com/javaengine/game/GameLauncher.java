@@ -6,7 +6,6 @@ package com.javaengine.game;
 public class GameLauncher {
 
     public static void main(String[] args) {
-        Game game = new Game();
-        game.start();
+        new Game(1024, 1024/16*9, "Game2dEngine", true);
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.javaengine.game.menus.config;
+package com.javaengine.game.config;
 
 import com.javaengine.game.display.Display;
 import com.javaengine.game.display.ScreenManager;
@@ -19,9 +19,10 @@ import java.awt.DisplayMode;
 public class GameFullscreen {
 
     private static ScreenManager screen = new ScreenManager();
-    
+
     /**
      * Checks if the window is fullscreen.
+     *
      * @param display
      */
     public static void checkFullScreen(Display display) {
@@ -34,15 +35,28 @@ public class GameFullscreen {
         }
     }
 
+    /**
+     * Set the game in fullscreen mode.
+     *
+     * @param display The game frame.
+     */
     private static void setFullScreen(Display display) {
         screen.setFullScreen(display, getDisplayMode());
     }
 
+    /**
+     * Change the resolution.
+     */
     public static void changeResolution() {
         updateResolution("currentresolution", currentGameResolutions);
         screen.setResolution(getDisplayMode());
     }
 
+    /**
+     * Get the displayMode.
+     *
+     * @return Returns the displayMode.
+     */
     private static DisplayMode getDisplayMode() {
         String[] components = currentGameResolutions.split("@");
         return new DisplayMode(Integer.parseInt(components[0]),

@@ -21,9 +21,10 @@ public abstract class Creature extends Entity {
     protected String name;
     protected int xMove;
     protected int yMove;
-    protected int speed;
+    protected float speed, maxSpeed;
     protected int numSteps = 0;
     protected boolean isMoving;
+    protected boolean isSwimming;
     protected int movingDir = 1;
     protected int scale = 1;
 
@@ -38,7 +39,7 @@ public abstract class Creature extends Entity {
     public Creature(Handler handler, String name, int width, int height) {
         super(handler, width, height);
         this.name = name;
-        speed = DEFAULT_SPEED;
+        speed = maxSpeed = DEFAULT_SPEED;
         xMove = 0;
         yMove = 0;
     }
@@ -55,9 +56,12 @@ public abstract class Creature extends Entity {
                 moveY();
             }
             isMoving = true;
+            numSteps++;
         }
-
-        numSteps++;
+        isSwimming = isOnWater(
+                (x + Tile.TILE_WIDTH) / Tile.TILE_WIDTH,
+                (y + height) / Tile.TILE_HEIGHT
+        );
     }
 
     /**
@@ -131,6 +135,17 @@ public abstract class Creature extends Entity {
         return handler.getLevel().getTile(x, y).isSolid();
     }
 
+    /**
+     * Checks if the creature is on the water.
+     *
+     * @param x The x position.
+     * @param y The y position.
+     * @return Returns the creature is on the water.
+     */
+    protected boolean isOnWater(int x, int y) {
+        return handler.getLevel().getTile(x, y).getId() == Tile.WATER.getId();
+    }
+
     // getters and setters
     public String getName() {
         return name;
@@ -140,11 +155,11 @@ public abstract class Creature extends Entity {
         this.name = name;
     }
 
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
@@ -182,6 +197,10 @@ public abstract class Creature extends Entity {
 
     public int getyMove() {
         return yMove;
+    }
+
+    public boolean isIsSwimming() {
+        return isSwimming;
     }
 
     public void setyMove(int yMove) {

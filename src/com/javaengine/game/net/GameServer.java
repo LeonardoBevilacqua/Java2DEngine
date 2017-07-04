@@ -10,7 +10,6 @@ import com.javaengine.game.net.packets.Packet00Login;
 import com.javaengine.game.net.packets.Packet01Disconnect;
 import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
-import com.javaengine.game.net.packets.Packet04StartDomingo;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -121,11 +120,6 @@ public class GameServer extends Thread {
             case LEVEL_UPDATE:
                 packet = new Packet03LevelUpdate(data);
                 this.handleUpdate((Packet03LevelUpdate) packet);
-                break;
-
-            case START_DOMINGO:
-                packet = new Packet04StartDomingo(data);
-                this.handleStart((Packet04StartDomingo) packet);
                 break;
         }
 
@@ -264,18 +258,5 @@ public class GameServer extends Thread {
                 packet.writeData(this);
             }
         }
-    }
-
-    private void handleStart(Packet04StartDomingo packet) {
-        packet.setJogadores(connectedPlayers.size());
-        if (packet.getJogadores() >= 2) {
-            if (!packet.isStart()) {
-                packet.setMinutes(System.currentTimeMillis() + 120000);
-                packet.setStart(true);
-            }
-
-            packet.checkTimer();
-        }
-        packet.writeData(this);
     }
 }

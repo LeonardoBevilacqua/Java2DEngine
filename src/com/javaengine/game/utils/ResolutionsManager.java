@@ -7,6 +7,7 @@ package com.javaengine.game.utils;
 
 import com.javaengine.game.display.ScreenManager;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -26,7 +27,9 @@ public abstract class ResolutionsManager {
     public static boolean isFullscreen;
 
     /**
-     * Gets all possibles resolutions.
+     * Gets all possible resolutions.
+     *
+     * @return Returns all possible resolutions.
      */
     private static String[] getCompatibleResolutions() {
         ScreenManager screen = new ScreenManager();
@@ -35,7 +38,8 @@ public abstract class ResolutionsManager {
 
         for (int i = 0; i < length; i++) {
 
-            if (screen.getAllCompatibleDisplayModes()[i].getBitDepth() == 32 || screen.getAllCompatibleDisplayModes()[i].getBitDepth() == -1) {
+            if (screen.getAllCompatibleDisplayModes()[i].getBitDepth() == 32
+                    || screen.getAllCompatibleDisplayModes()[i].getBitDepth() == -1) {
                 resolutions[i] = screen.getAllCompatibleDisplayModes()[i].getWidth() + "@"
                         + screen.getAllCompatibleDisplayModes()[i].getHeight() + "@"
                         + screen.getAllCompatibleDisplayModes()[i].getBitDepth() + "@"
@@ -48,19 +52,31 @@ public abstract class ResolutionsManager {
         return resolutions;
     }
 
+    /**
+     * Create the file with resolution configuration.
+     */
     public static void createResolution() {
-        String resolutionsText = "fullscreen:0;\ncurrentresolution:null;\nresolutions:\n";
+        String resolutionsText = "fullscreen:0;" + System.lineSeparator()
+                + "currentresolution:null;" + System.lineSeparator()
+                + "resolutions:" + System.lineSeparator();
+
         String[] resolutions = getCompatibleResolutions();
         for (String resolution : resolutions) {
             if (resolution == null) {
                 break;
             }
-            resolutionsText += resolution + ",\n";
+            resolutionsText += resolution + ",";
         }
 
-        Utils.writeStringAsFile(resolutionsText, "resolutions", "txt");
+        Utils.writeStringAsFile(resolutionsText, "resolutions", "cfg");
     }
 
+    /**
+     * Updates the file resolution.
+     *
+     * @param param The parameter of the file.
+     * @param value The new value.
+     */
     public static void updateResolution(String param, String value) {
 
         String resolutionsText = "";
@@ -73,25 +89,28 @@ public abstract class ResolutionsManager {
                 break;
         }
 
-        resolutionsText += file[0] + ";\n" + file[1] + ";\n" + file[2] + "\n";
+        resolutionsText += file[0] + ";" + System.lineSeparator() + file[1] + ";" + System.lineSeparator() + file[2] + System.lineSeparator();
 
-        Utils.writeStringAsFile(resolutionsText, "resolutions", "txt");
+        Utils.writeStringAsFile(resolutionsText, "resolutions", "cfg");
     }
 
+    /**
+     * Load the resolution file
+     */
     public static void loadResolution() {
         StringBuilder builder = new StringBuilder();
+        File fileResolution = new File("resolutions.cfg");
+        if (!fileResolution.exists()) {
+            createResolution();
+        }
 
         try {
-            BufferedReader br = new BufferedReader(
-                    new FileReader("resolutions.txt")
-            );
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                builder.append(line);
+            try (BufferedReader br = new BufferedReader(new FileReader(fileResolution))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    builder.append(line);
+                }
             }
-
-            br.close();
 
             file = builder.toString().split(";");
             isFullscreen = file[0].split(":")[1].equals("1");
@@ -102,8 +121,7 @@ public abstract class ResolutionsManager {
             }
 
         } catch (IOException e) {
-            createResolution();
-            loadResolution();
+            e.printStackTrace();
         }
     }
 }

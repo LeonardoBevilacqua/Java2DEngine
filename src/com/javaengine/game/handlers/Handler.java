@@ -151,12 +151,4 @@ public class Handler {
     public MouseManager getMouseManager(){
         return game.getMouseManager();
     }
-    
-    /**
-     * 
-     * @return Returns the object of the menu state.
-     */
-    public State getMenuState(){
-        return game.getMenuState();
-    }
 }

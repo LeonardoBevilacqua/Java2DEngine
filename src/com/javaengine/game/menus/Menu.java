@@ -6,6 +6,7 @@
 package com.javaengine.game.menus;
 
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.ui.UIManager;
 import java.awt.Graphics;
 import java.util.HashMap;
 
@@ -39,6 +40,7 @@ public abstract class Menu {
     // Class
     protected Handler handler;
     public final String ID;
+    protected UIManager uiManager;
 
     /**
      * Create the base of the menu.
@@ -49,14 +51,17 @@ public abstract class Menu {
     public Menu(Handler handler, String id) {
         this.handler = handler;
         this.ID = id;
+        this.uiManager = new UIManager(handler);
     }
 
     public abstract void tick();
 
     public abstract void render(Graphics g);
 
-    public abstract void startMouseListener();
-
+    public void startMouseListener() {
+        handler.getMouseManager().setUIManager(uiManager);
+    }
+    
     public void stopMouseListener() {
         handler.getMouseManager().setUIManager(null);
     }

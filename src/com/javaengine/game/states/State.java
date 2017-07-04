@@ -1,4 +1,4 @@
-package com.javaengine.game.states;
+    package com.javaengine.game.states;
 
 import com.javaengine.game.handlers.Handler;
 import java.awt.Graphics;
@@ -9,31 +9,7 @@ import java.awt.Graphics;
  * @author leonardo
  */
 public abstract class State {
-
-    /**
-     * The current state active.
-     */
-    private static State currentState = null;
-
-    /**
-     * Sets the new current state.
-     *
-     * @param state The state object.
-     */
-    public static void setState(State state) {
-        currentState = state;
-    }
-
-    /**
-     * Gets the current state.
-     *
-     * @return The State.
-     */
-    public static State getCurrentState() {
-        return currentState;
-    }
-
-    // class
+    
     protected Handler handler;
 
     /**

@@ -1,7 +1,10 @@
 package com.javaengine.game.states;
 
 import com.javaengine.game.handlers.Handler;
+import com.javaengine.game.menus.ConfigMenu;
+import com.javaengine.game.menus.MainMenu;
 import com.javaengine.game.menus.Menu;
+import com.javaengine.game.ui.UIManager;
 import java.awt.Graphics;
 
 /**
@@ -10,6 +13,8 @@ import java.awt.Graphics;
  * @author leonardo
  */
 public class MenuState extends State {
+    
+    
 
     /**
      * Initilize the menu.
@@ -18,6 +23,9 @@ public class MenuState extends State {
      */
     public MenuState(Handler handler) {
         super(handler);
+        Menu.addMenu(new MainMenu(handler, "MainMenu"));
+        Menu.addMenu(new ConfigMenu(handler, "ConfigMenu"));
+        Menu.setMenu("MainMenu");
     }
 
     /**

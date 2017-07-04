@@ -16,7 +16,7 @@ import com.javaengine.game.handlers.Handler;
  */
 public class DebugMode {
 
-    private static Handler handler;
+    private Handler handler;
 
     /**
      * The constructor needs a handler to have access of the components of the
@@ -25,7 +25,7 @@ public class DebugMode {
      * @param handler The handler of the game.
      */
     public DebugMode(Handler handler) {
-        DebugMode.handler = handler;
+        this.handler = handler;
     }
 
     /**
@@ -51,8 +51,6 @@ public class DebugMode {
             case SEVERE:
                 System.out.println("[" + NAME + "][SEVERE] " + msg);
                 handler.getGame().stop();
-                break;
-            case NOTSHOW:
                 break;
         }
     }

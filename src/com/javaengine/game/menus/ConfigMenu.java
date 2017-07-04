@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.javaengine.game.menus.config;
+package com.javaengine.game.menus;
 
+import com.javaengine.game.config.GameFullscreen;
 import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.Text;
 import com.javaengine.game.handlers.Handler;
@@ -25,8 +26,7 @@ import java.awt.event.KeyEvent;
  */
 public class ConfigMenu extends Menu {
 
-    private UIManager uiManager;
-    //private ScreenManager screen;
+
     private int selectedItem;
     private String selectResolution;
 
@@ -108,36 +108,6 @@ public class ConfigMenu extends Menu {
         }
     }
 
-    /**
-     * Checks if the window is fullscreen.
-     */
-    /*private void checkFullScreen() {
-        if (isFullscreen) {
-            if (screen.getFullScreenWindow() == null) {
-                setFullScreen();
-            }
-        } else {
-            screen.setWindowScreen();
-        }
-    }
-
-    private void setFullScreen() {
-        screen.setFullScreen(
-                handler.getGame().getDisplay(), getDisplayMode());
-    }
-
-    private void changeResolution() {
-        updateResolution("currentresolution", currentGameResolutions);
-        screen.setResolution(getDisplayMode());
-    }
-
-    private DisplayMode getDisplayMode() {
-        String[] components = currentGameResolutions.split("@");
-        return new DisplayMode(Integer.parseInt(components[0]),
-                Integer.parseInt(components[1]),
-                Integer.parseInt(components[2]),
-                Integer.parseInt(components[3]));
-    }*/
     @Override
     public void startMouseListener() {
         handler.getMouseManager().setUIManager(uiManager);

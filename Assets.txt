@@ -1,0 +1,2 @@
+tilessheet:"/Tiles_test.png";
+playersheet:"/player.png";

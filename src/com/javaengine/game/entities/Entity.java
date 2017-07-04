@@ -17,7 +17,7 @@ public abstract class Entity {
 
     public static final int DEFAULT_HEALTH = 10;
 
-    protected String uniqueId = "";
+    protected String id;
     protected Handler handler;
     protected int x, y;
     protected int width, height;
@@ -34,17 +34,16 @@ public abstract class Entity {
      * @param height The height of the entity.
      */
     public Entity(Handler handler, int width, int height) {
-        this.handler = handler;
-        this.width = width;
-        this.height = height;
-
-        init();
+        init(handler, width, height);
     }
 
     /**
      * Initialize the components outside the constructor.
      */
-    private void init() {
+    private void init(Handler handler, int width, int height) {
+        this.handler = handler;
+        this.width = width;
+        this.height = height;
         this.x = 20;
         this.y = 20;
         this.health = maxHealth = DEFAULT_HEALTH;
@@ -97,14 +96,14 @@ public abstract class Entity {
         float healthPercentage = this.health / this.maxHealth;
 
         if (this instanceof Player && handler.getLevel().getEntityManager().getPlayer().equals(this)) {
-            
+
             g.drawImage(Assets.lifeBar[2], 20, 20, 96, 32, null);
             g.drawImage(Assets.lifeBar[1], 20, 20, (int) healthPercentage * 96, 32, null);
             g.drawImage(Assets.lifeBar[0], 20, 20, 96, 32, null);
         }
 
         if (damage && !this.equals(handler.getLevel().getEntityManager().getPlayer())) {
-            
+
             g.drawImage(Assets.lifeBar[2], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, 96, 32, null);
             g.drawImage(Assets.lifeBar[1], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, (int) (healthPercentage * 96), 32, null);
             g.drawImage(Assets.lifeBar[0], x - handler.getGameCamera().getxOffset(), y - handler.getGameCamera().getyOffset() - 8, 96, 32, null);
@@ -192,7 +191,7 @@ public abstract class Entity {
     }
 
     public String getUniqueId() {
-        return uniqueId;
+        return id;
     }
 
 }

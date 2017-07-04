@@ -158,26 +158,6 @@ public abstract class Level {
         }
     }
 
-    // TEMP
-    /**
-     * Save the map in a file.
-     */
-    public void saveLevelToFile() {
-
-    }
-
-    // TEMP
-    /**
-     * Alter the tile of the map.
-     *
-     * @param x The x position.
-     * @param y The y position.
-     * @param newTile The new Tile.
-     */
-    public void alterTile(int x, int y, Tile newTile) {
-
-    }
-
     // getters and setters
     public int getWidth() {
         return width;

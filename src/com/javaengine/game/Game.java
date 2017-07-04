@@ -8,14 +8,11 @@ import com.javaengine.game.handlers.Handler;
 import com.javaengine.game.handlers.WindowHandler;
 import com.javaengine.game.handlers.input.KeyManager;
 import com.javaengine.game.handlers.input.MouseManager;
-import com.javaengine.game.menus.MainMenu;
-import com.javaengine.game.menus.Menu;
-import com.javaengine.game.menus.config.GameFullscreen;
+import com.javaengine.game.config.GameFullscreen;
 import com.javaengine.game.states.MenuState;
-import com.javaengine.game.states.State;
+import com.javaengine.game.states.StateManager;
 import com.javaengine.game.utils.DebugMode;
 import com.javaengine.game.utils.ResolutionsManager;
-import static com.javaengine.game.utils.ResolutionsManager.loadResolution;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -31,16 +28,14 @@ import javax.swing.JOptionPane;
 public class Game implements Runnable {
 
 // STATIC VARIABLES
-    public static final String NAME = "Game2dEngine";
-    public static final int GAME_WIDTH = 1024,
+    public static String NAME = "Game2dEngine";
+    public static int GAME_WIDTH = 1024,
             GAME_HEIGHT = GAME_WIDTH / 16 * 9;
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = true;
 
 // VARIBLES
     private Thread thread;
     private boolean running = false;
-    private int tickCount = 0;
-    private int width, height;
     private DebugMode debugMode;
     private int lastFrame;
     private int lastTick;
@@ -51,9 +46,6 @@ public class Game implements Runnable {
     // graphics
     private BufferStrategy bs;
     private Graphics g;
-
-    // states
-    private State menuState;
 
     // input
     private KeyManager keyManager;
@@ -71,18 +63,31 @@ public class Game implements Runnable {
     // frame limiter
     private boolean frameLimiter;
 
+    // State
+    private StateManager stateManager;
+
+    public Game() {
+        start();
+    }
+
+    public Game(int width, int height, String title, boolean debug) {
+        this();
+        GAME_WIDTH = width;
+        GAME_HEIGHT = height;
+        NAME = title;
+        DEBUG = debug;
+    }
+
     /**
      * Initializes all the components that were defined in the Game class.
      */
     private void init() {
+        debugMode = new DebugMode(handler);
         try {
             handler = new Handler(this);
 
-            width = GAME_WIDTH;
-            height = GAME_HEIGHT;
-            display = new Display(NAME, width, height);
+            display = new Display(NAME, GAME_WIDTH, GAME_HEIGHT);
             frameLimiter = true;
-            debugMode = new DebugMode(handler);
 
             // ADD THE CONTROLLERS OF THE GAME  
             keyManager = new KeyManager();
@@ -96,23 +101,18 @@ public class Game implements Runnable {
 
             window = new WindowHandler(handler);
             display.getFrame().addWindowListener(window);
-            
+
             ResolutionsManager.loadResolution();
             GameFullscreen.checkFullScreen(display);
 
             Assets.init();
             gameCamera = new GameCamera(handler, 0, 0);
 
-            Menu.addMenu(new MainMenu(handler,"MainMenu"));
-            Menu.setMenu("MainMenu");
-
-            menuState = new MenuState(handler);
-
-            State.setState(menuState);
+            stateManager = new StateManager(new MenuState(handler));
 
         } catch (Exception e) {
             debugMode.debug(DebugMode.DebugLevel.SEVERE, e.getMessage());
-            System.exit(1);
+            System.exit(0);
 
         }
     }
@@ -206,10 +206,10 @@ public class Game implements Runnable {
      * necessary.
      */
     private void checkWindow() {
-        if (width != display.getFrame().getWidth()
-                || height != display.getFrame().getHeight()) {
-            width = display.getFrame().getWidth();
-            height = display.getFrame().getHeight();
+        if (GAME_WIDTH != display.getFrame().getWidth()
+                || GAME_HEIGHT != display.getFrame().getHeight()) {
+            GAME_WIDTH = display.getFrame().getWidth();
+            GAME_HEIGHT = display.getFrame().getHeight();
         }
     }
 
@@ -217,11 +217,10 @@ public class Game implements Runnable {
      * Updates all variables of the game.
      */
     public void tick() {
-        tickCount++;
         keyManager.tick();
 
-        if (State.getCurrentState() != null) {
-            State.getCurrentState().tick();
+        if (stateManager.getCurrentState() != null) {
+            stateManager.getCurrentState().tick();
         }
         checkWindow();
     }
@@ -238,11 +237,11 @@ public class Game implements Runnable {
 
         g = bs.getDrawGraphics();
         // clear screen
-        g.clearRect(0, 0, width, height);
+        g.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         // draw        
-        if (State.getCurrentState() != null) {
-            State.getCurrentState().render(g);
+        if (stateManager.getCurrentState() != null) {
+            stateManager.getCurrentState().render(g);
         }
 
         if (DEBUG) {
@@ -292,7 +291,7 @@ public class Game implements Runnable {
      * @return Returns the width of the game.
      */
     public int getWidth() {
-        return width;
+        return GAME_WIDTH;
     }
 
     /**
@@ -300,15 +299,15 @@ public class Game implements Runnable {
      * @return Returns the height of the game.
      */
     public int getHeight() {
-        return height;
+        return GAME_HEIGHT;
     }
 
     /**
      *
      * @return Returns the object of the menu state.
      */
-    public State getMenuState() {
-        return menuState;
+    public StateManager getStateManager() {
+        return stateManager;
     }
 
     /**

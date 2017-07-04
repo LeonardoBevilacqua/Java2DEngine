@@ -6,7 +6,6 @@ import com.javaengine.game.gfx.Assets;
 import com.javaengine.game.gfx.Text;
 import com.javaengine.game.gfx.animations.AnimationEntity;
 import com.javaengine.game.inventory.Inventory;
-import com.javaengine.game.level.tiles.Tile;
 import com.javaengine.game.net.packets.Packet02Move;
 import com.javaengine.game.net.packets.Packet03LevelUpdate;
 import java.awt.Color;
@@ -21,7 +20,6 @@ import java.awt.image.BufferedImage;
  */
 public class Player extends Creature {
 
-    protected boolean isSwimming = false;
     protected boolean hasInput = true;
 
     private int tickCount = 0;
@@ -46,18 +44,22 @@ public class Player extends Creature {
      * @param username The name of the player.
      * @param texture The texture.
      */
-    public Player(Handler handler, String username, BufferedImage[] texture) {
+    public Player(
+            Handler handler, 
+            String username,
+            BufferedImage[] texture
+    ) {
         super(handler, username, Creature.DEFAULT_CRETURE_WIDTH, Creature.DEFAULT_CRETURE_HEIGHT * 2);
         this.USERNAME = username;
         this.texture = texture;
 
         bounds.x = 16;
-        bounds.y = 32 * 2;
+        bounds.y = 32 * 3;
         bounds.width = 32;
         bounds.height = 8 * 2;
 
         // animation
-        walkingAnimation = new AnimationEntity(speed * 100, this.texture);
+        walkingAnimation = new AnimationEntity((int) (speed * 100), this.texture);
 
         inventory = new Inventory(handler);
 
@@ -126,9 +128,10 @@ public class Player extends Creature {
     /**
      * Check if is swimming.
      */
-    private void checkSwimming() {
+    /*private void checkSwimming() {
         // PODE DAR ERRO NA POSIÇAO        
-        if (handler.getLevel().getTile((x + Tile.TILE_WIDTH) / Tile.TILE_WIDTH,
+        if (handler.getLevel().getTile(
+    (x + Tile.TILE_WIDTH) / Tile.TILE_WIDTH,
                 (y + height) / Tile.TILE_HEIGHT).getId() == Tile.WATER.getId()) {
             isSwimming = true;
         }
@@ -143,8 +146,7 @@ public class Player extends Creature {
         } else if (isSwimming && 30 <= tickCount % 60 && tickCount % 60 < 45) {
             y += 1;
         }
-    }
-
+    }*/
     /**
      * Kill the player.
      */
@@ -223,7 +225,6 @@ public class Player extends Creature {
     @Override
     public void tick() {
         inventory.tick();
-        checkSwimming();
 
         if (inventory.isActive()) {
             return;
@@ -250,7 +251,7 @@ public class Player extends Creature {
         if (handler.getSocketClient() != null) {
 
             Packet02Move packet = new Packet02Move(
-                    this.uniqueId,
+                    this.id,
                     this.x,
                     this.y,
                     this.numSteps,
@@ -278,7 +279,12 @@ public class Player extends Creature {
             Text.drawString(g, USERNAME, x - handler.getGameCamera().getxOffset() + width / 2,
                     y - handler.getGameCamera().getyOffset() - 16, true, Color.WHITE, Assets.font16);
         }
-        //check colision box - g.fillRect(x + bounds.x - handler.getGameCamera().getxOffset(), y + bounds.y - handler.getGameCamera().gety  Offset(), bounds.width, bounds.height);
+        //check colision box - 
+        /*g.fillRect(
+                x + bounds.x - handler.getGameCamera().getxOffset(),
+                y + bounds.y - handler.getGameCamera().getyOffset(),
+                bounds.width,
+                bounds.height);*/
     }
 
     /**
@@ -302,10 +308,6 @@ public class Player extends Creature {
     // getters and setters
     public String getUsername() {
         return this.USERNAME;
-    }
-
-    public boolean isIsSwimming() {
-        return isSwimming;
     }
 
     public Inventory getInventory() {
